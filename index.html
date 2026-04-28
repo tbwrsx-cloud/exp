@@ -1797,6 +1797,11 @@ function gdStatus(state, sub) {
     dot.textContent = '🟢'; title.textContent = 'Connected';
     btn.classList.add('drive-on'); btn.title = 'Drive: synced';
     conn.textContent = '🔄 Switch account';
+    conn.onclick = async () => {
+      GD.connected = false;
+      localStorage.removeItem('gd_connected');
+      await gdConnect();
+    };
     exp.style.display = imp.style.display = '';
   } else if (state === 'syncing') {
     dot.textContent = '🔵'; title.textContent = 'Syncing…';
@@ -1815,26 +1820,53 @@ function gdStatus(state, sub) {
 // ── OAuth sign-in ──
 function gdSignIn(showChooser = false) {
   return new Promise((resolve, reject) => {
-    if (!window.google) { reject(new Error('GSI not loaded')); return; }
+    if (!window.google || !window.google.accounts) {
+      reject(new Error('Google Sign-In not loaded yet. Please wait and try again.'));
+      return;
+    }
+    // If showing chooser, revoke existing token first so Google shows account picker
+    if (showChooser && GD.token) {
+      google.accounts.oauth2.revoke(GD.token, () => {});
+      GD.token = null; GD.tokenExp = 0;
+    }
+    // Always create a fresh token client
     const client = google.accounts.oauth2.initTokenClient({
       client_id: GD.CLIENT_ID,
       scope:     GD.SCOPE,
+      prompt:    showChooser ? 'select_account' : 'none',
       callback:  resp => {
-        if (resp.error) { reject(new Error(resp.error)); return; }
+        if (resp.error) {
+          // 'none' prompt failed (no session) — retry with consent
+          if (resp.error === 'interaction_required' || resp.error === 'consent_required') {
+            const retry = google.accounts.oauth2.initTokenClient({
+              client_id: GD.CLIENT_ID,
+              scope:     GD.SCOPE,
+              callback:  r2 => {
+                if (r2.error) { reject(new Error(r2.error)); return; }
+                GD.token    = r2.access_token;
+                GD.tokenExp = Date.now() + (r2.expires_in - 120) * 1000;
+                resolve(GD.token);
+              },
+            });
+            retry.requestAccessToken({ prompt: 'select_account' });
+            return;
+          }
+          reject(new Error(resp.error)); return;
+        }
         GD.token    = resp.access_token;
         GD.tokenExp = Date.now() + (resp.expires_in - 120) * 1000;
         resolve(GD.token);
       },
     });
-    // showChooser=true → always show account picker (manual connect)
-    // showChooser=false → silent refresh if session exists
-    client.requestAccessToken({ prompt: showChooser ? 'select_account' : '' });
+    client.requestAccessToken({ prompt: showChooser ? 'select_account' : 'none' });
   });
 }
 
 async function gdToken() {
   if (GD.token && Date.now() < GD.tokenExp) return GD.token;
-  return await gdSignIn();
+  // Silent refresh — if fails, will show chooser
+  try { return await gdSignIn(false); }
+  catch(e) { return await gdSignIn(true); }
 }
 
 // ── Find backup file in Drive ──
