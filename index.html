@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0A0A0A"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <link rel="manifest" href="./manifest.json"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <title>BudgetGrid</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -63,6 +64,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
   cursor:pointer;transition:all .15s;
 }
 .btn-icon:active{transform:scale(.93);}
+.btn-icon.drive-on{border-color:var(--income-col);color:var(--income-col);}
+.btn-icon.drive-busy{border-color:var(--accent);animation:drivePulse 1s infinite;}
+.btn-icon.drive-err{border-color:var(--expense-col);}
+@keyframes drivePulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* ══════════════════════════════════════
    BOTTOM NAV
@@ -505,28 +510,33 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
   <button class="nav-item" data-page="pageDash"><span class="ni">🏠</span>Overview</button>
 </nav>
 
-<!-- BACKUP MODAL -->
+<!-- DRIVE / BACKUP MODAL -->
 <div class="mo" id="backupModal">
   <div class="ms2">
     <div class="mh"></div>
-    <div class="mt">Backup & Restore</div>
+    <div class="mt">☁️ Google Drive Sync</div>
 
-    <div style="margin-bottom:18px;">
-      <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">EXPORT</div>
-      <button class="bp" id="btnExportFile" style="margin-bottom:8px;background:var(--surface2);color:var(--text);border:1px solid var(--border);">⬇ Download backup.json</button>
-      <button class="bp" id="btnCopyJson" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);">📋 Copy JSON to clipboard</button>
+    <!-- Drive status strip -->
+    <div id="driveStatusBar" style="display:flex;align-items:center;gap:10px;background:var(--surface3);border-radius:10px;padding:10px 14px;margin-bottom:18px;">
+      <span id="driveStatusDot" style="font-size:18px;">⚪</span>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;" id="driveStatusTitle">Not connected</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);" id="driveStatusSub">Tap below to sign in with Google</div>
+      </div>
     </div>
 
-    <div style="margin-bottom:18px;">
-      <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">IMPORT</div>
-      <button class="bp" id="btnImportFile" style="margin-bottom:8px;background:var(--surface2);color:var(--text);border:1px solid var(--border);">⬆ Load from file</button>
+    <!-- Drive actions -->
+    <button class="bp" id="btnDriveConnect" style="margin-bottom:8px;">🔑 Sign in with Google</button>
+    <button class="bp" id="btnDriveExport" style="margin-bottom:8px;background:var(--surface2);color:var(--text);border:1px solid var(--border);display:none;">⬆ Save to Drive now</button>
+    <button class="bp" id="btnDriveImport" style="margin-bottom:18px;background:var(--surface2);color:var(--text);border:1px solid var(--border);display:none;">⬇ Load from Drive</button>
+
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px;">
+      <div style="font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">LOCAL BACKUP</div>
+      <div style="display:flex;gap:8px;">
+        <button class="bp" id="btnExportFile" style="flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border);font-size:12px;">⬇ Download</button>
+        <button class="bp" id="btnImportFile" style="flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border);font-size:12px;">⬆ Load file</button>
+      </div>
       <input type="file" id="fileImportInput" accept=".json" style="display:none"/>
-      <textarea id="pasteJsonArea" placeholder="…or paste JSON here and tap Restore" class="mi2" style="height:80px;resize:none;font-size:11px;"></textarea>
-      <button class="bp" id="btnRestoreJson" style="margin-top:8px;">↺ Restore from pasted JSON</button>
-    </div>
-
-    <div style="background:var(--surface3);border-radius:10px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">
-      💡 <strong style="color:var(--text);">Google Drive tip:</strong> Download the backup, then manually upload to your Drive folder. To restore, download from Drive and use "Load from file" above.
     </div>
 
     <button class="bs" id="closeBackupModal" style="width:100%;">Close</button>
@@ -1554,10 +1564,13 @@ document.querySelectorAll('.nav-item').forEach(btn => {
   });
 });
 
-document.getElementById('btnSave').addEventListener('click', () => { persist(); showToast('Saved ✓'); });
+document.getElementById('btnSave').addEventListener('click', () => { persist(); if(GD.connected) gdSave(); else showToast('Saved locally ✓'); });
 
 let asT;
-const schedAS = () => { clearTimeout(asT); asT = setTimeout(persist, 800); };
+const schedAS = () => {
+  clearTimeout(asT);
+  asT = setTimeout(() => { persist(); gdAutoSync(); }, 800);
+};
 
 
 // ══════════════════════════════════════
@@ -1754,101 +1767,289 @@ function rescheduleNotifs() {
 // Patch schedAS to trigger drive sync after local save
 // This runs after the module is fully loaded
 
-// ══════════════════════════════════════
-//  BACKUP & RESTORE
-// ══════════════════════════════════════
 
-function backupFilename() {
-  const d = new Date();
-  const ds = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-  return `budgetgrid-${ds}.json`;
+
+// ══════════════════════════════════════
+//  GOOGLE DRIVE SYNC + LOCAL BACKUP
+// ══════════════════════════════════════
+const GD = {
+  CLIENT_ID: '78583675583-0lqlvs3rmpcr951ivupdsc380sn51qp9.apps.googleusercontent.com',
+  SCOPE:     'https://www.googleapis.com/auth/drive.file',
+  FILE_NAME: 'budgetgrid-backup.json',
+  MIME:      'application/json',
+  token:     null,
+  tokenExp:  0,
+  fileId:    null,
+  connected: false,
+};
+
+// ── Status UI ──
+function gdStatus(state, sub) {
+  const dot   = document.getElementById('driveStatusDot');
+  const title = document.getElementById('driveStatusTitle');
+  const subEl = document.getElementById('driveStatusSub');
+  const btn   = document.getElementById('btnDrive');
+  const conn  = document.getElementById('btnDriveConnect');
+  const exp   = document.getElementById('btnDriveExport');
+  const imp   = document.getElementById('btnDriveImport');
+  btn.classList.remove('drive-on','drive-busy','drive-err');
+  if (state === 'connected') {
+    dot.textContent = '🟢'; title.textContent = 'Connected';
+    btn.classList.add('drive-on'); btn.title = 'Drive: synced';
+    conn.textContent = '🔄 Switch account';
+    exp.style.display = imp.style.display = '';
+  } else if (state === 'syncing') {
+    dot.textContent = '🔵'; title.textContent = 'Syncing…';
+    btn.classList.add('drive-busy');
+  } else if (state === 'error') {
+    dot.textContent = '🔴'; title.textContent = 'Error';
+    btn.classList.add('drive-err'); btn.title = 'Drive error — tap to retry';
+    exp.style.display = imp.style.display = '';
+  } else {
+    dot.textContent = '⚪'; title.textContent = 'Not connected';
+    exp.style.display = imp.style.display = 'none';
+  }
+  if (sub && subEl) subEl.textContent = sub;
 }
 
-// Export: download JSON file
+// ── OAuth sign-in ──
+function gdSignIn() {
+  return new Promise((resolve, reject) => {
+    if (!window.google) { reject(new Error('GSI not loaded')); return; }
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GD.CLIENT_ID,
+      scope:     GD.SCOPE,
+      callback:  resp => {
+        if (resp.error) { reject(new Error(resp.error)); return; }
+        GD.token    = resp.access_token;
+        GD.tokenExp = Date.now() + (resp.expires_in - 120) * 1000;
+        resolve(GD.token);
+      },
+    });
+    client.requestAccessToken({ prompt: '' });
+  });
+}
+
+async function gdToken() {
+  if (GD.token && Date.now() < GD.tokenExp) return GD.token;
+  return await gdSignIn();
+}
+
+// ── Find backup file in Drive ──
+async function gdFindFile(tok) {
+  const q   = encodeURIComponent(`name='${GD.FILE_NAME}' and mimeType='${GD.MIME}' and trashed=false`);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)`,
+    { headers: { Authorization: 'Bearer ' + tok } });
+  const data = await res.json();
+  return data.files?.length ? data.files[0] : null;
+}
+
+// ── Upload to Drive (create or update) ──
+async function gdUpload(tok, jsonStr) {
+  const blob = new Blob([jsonStr], { type: GD.MIME });
+  if (GD.fileId) {
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${GD.fileId}?uploadType=media`, {
+      method:  'PATCH',
+      headers: { Authorization: 'Bearer ' + tok, 'Content-Type': GD.MIME },
+      body:    blob,
+    });
+  } else {
+    const meta = { name: GD.FILE_NAME, mimeType: GD.MIME };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+    form.append('file', blob);
+    const res  = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+      method:  'POST',
+      headers: { Authorization: 'Bearer ' + tok },
+      body:    form,
+    });
+    const data = await res.json();
+    GD.fileId  = data.id;
+  }
+}
+
+// ── Download from Drive ──
+async function gdDownload(tok, fileId) {
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    { headers: { Authorization: 'Bearer ' + tok } });
+  return await res.json();
+}
+
+// ── Auto-sync (debounced 3s after every change) ──
+let gdSyncTimer;
+async function gdAutoSync() {
+  if (!GD.connected) return;
+  clearTimeout(gdSyncTimer);
+  gdSyncTimer = setTimeout(async () => {
+    try {
+      gdStatus('syncing', 'Auto-saving…');
+      const tok = await gdToken();
+      await gdUpload(tok, JSON.stringify(S));
+      const now = new Date().toLocaleTimeString();
+      gdStatus('connected', `Last synced ${now}`);
+    } catch(err) {
+      console.warn('Drive auto-sync:', err);
+      gdStatus('error', err.message);
+    }
+  }, 3000);
+}
+
+// ── Manual save to Drive ──
+async function gdSave() {
+  try {
+    gdStatus('syncing', 'Saving…');
+    const tok = await gdToken();
+    if (!GD.fileId) {
+      const f = await gdFindFile(tok);
+      if (f) GD.fileId = f.id;
+    }
+    await gdUpload(tok, JSON.stringify(S, null, 2));
+    gdStatus('connected', 'Saved to Drive ✓');
+    showToast('✓ Saved to Google Drive');
+  } catch(err) {
+    gdStatus('error', err.message);
+    showToast('Drive save failed');
+  }
+}
+
+// ── Load from Drive ──
+async function gdLoad() {
+  try {
+    gdStatus('syncing', 'Loading from Drive…');
+    const tok = await gdToken();
+    const file = await gdFindFile(tok);
+    if (!file) { showToast('No backup found in Drive'); gdStatus('connected','No backup file yet'); return; }
+    GD.fileId = file.id;
+    const remote = await gdDownload(tok, file.id);
+    if (!remote || typeof remote !== 'object') throw new Error('Invalid data');
+    const localTheme = S.theme;
+    Object.assign(S, remote);
+    S.theme = localTheme;
+    mergeDefaults();
+    if (!Array.isArray(S.calRows)) S.calRows = defaultCalRows();
+    persist();
+    buildTable();
+    applyTheme(S.theme);
+    gdStatus('connected', `Loaded — ${file.name}`);
+    showToast('✓ Loaded from Google Drive');
+    document.getElementById('backupModal').classList.remove('open');
+  } catch(err) {
+    gdStatus('error', err.message);
+    showToast('Drive load failed');
+  }
+}
+
+// ── Connect: sign in → find file → load if exists ──
+async function gdConnect() {
+  try {
+    gdStatus('syncing', 'Signing in…');
+    const tok = await gdSignIn();
+    const file = await gdFindFile(tok);
+    if (file) {
+      GD.fileId = file.id;
+      // Ask user: load from Drive or keep local?
+      if (confirm('Backup found in Drive. Load it now?\n(Cancel to keep current local data)')) {
+        await gdLoad();
+      }
+    }
+    GD.connected = true;
+    gdStatus('connected', file ? `Backup: ${file.name}` : 'No backup yet — will create on first save');
+    showToast('✓ Connected to Google Drive');
+    // Persist connection flag
+    localStorage.setItem('gd_connected', '1');
+  } catch(err) {
+    GD.connected = false;
+    gdStatus('error', err.message);
+    showToast('Sign-in failed: ' + err.message);
+    console.error(err);
+  }
+}
+
+// ── Local file export ──
 function exportToFile() {
+  const date = new Date();
+  const ds   = `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
   const json = JSON.stringify(S, null, 2);
   const blob = new Blob([json], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url; a.download = backupFilename();
+  a.href = url; a.download = `budgetgrid-${ds}.json`;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('✓ Downloaded ' + backupFilename());
+  showToast('✓ Downloaded backup');
 }
 
-// Export: copy JSON to clipboard
-async function copyJsonToClipboard() {
-  const json = JSON.stringify(S, null, 2);
-  try {
-    await navigator.clipboard.writeText(json);
-    showToast('✓ JSON copied to clipboard');
-  } catch(e) {
-    showToast('Copy failed — try Download instead');
-  }
-}
-
-// Import: load from JSON string
+// ── Local file import ──
 function restoreFromJson(json) {
   try {
     const parsed = JSON.parse(json);
-    if (!parsed || typeof parsed !== 'object') throw new Error('Invalid JSON');
+    if (!parsed || typeof parsed !== 'object') throw new Error('Invalid');
     const localTheme = S.theme;
     Object.assign(S, parsed);
     S.theme = localTheme;
     mergeDefaults();
+    if (!Array.isArray(S.calRows)) S.calRows = defaultCalRows();
     persist();
     buildTable();
     applyTheme(S.theme);
-    if (!S.calRows || !Array.isArray(S.calRows)) S.calRows = defaultCalRows();
     document.getElementById('backupModal').classList.remove('open');
-    showToast('✓ Data restored successfully');
-    showBanner('Restore complete', 'All budget data loaded from backup');
+    showToast('✓ Data restored');
   } catch(e) {
     showToast('Invalid backup file');
-    console.error(e);
   }
 }
 
-// Import: from file upload
-document.getElementById('btnImportFile').addEventListener('click', () => {
-  document.getElementById('fileImportInput').click();
-});
-document.getElementById('fileImportInput').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => restoreFromJson(ev.target.result);
-  reader.readAsText(file);
-  e.target.value = ''; // reset so same file can be re-imported
-});
-
-// Import: from pasted JSON
-document.getElementById('btnRestoreJson').addEventListener('click', () => {
-  const json = document.getElementById('pasteJsonArea').value.trim();
-  if (!json) { showToast('Paste JSON first'); return; }
-  restoreFromJson(json);
-});
-
-// Export buttons
-document.getElementById('btnExportFile').addEventListener('click', exportToFile);
-document.getElementById('btnCopyJson').addEventListener('click', copyJsonToClipboard);
-
-// Modal open/close
+// ── Wire up all Drive + backup buttons ──
 document.getElementById('btnDrive').addEventListener('click', () => {
   document.getElementById('backupModal').classList.add('open');
 });
 document.getElementById('closeBackupModal').addEventListener('click', () => {
   document.getElementById('backupModal').classList.remove('open');
 });
-document.getElementById('backupModal').addEventListener('click', (e) => {
+document.getElementById('backupModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+document.getElementById('btnDriveConnect').addEventListener('click', gdConnect);
+document.getElementById('btnDriveExport').addEventListener('click', gdSave);
+document.getElementById('btnDriveImport').addEventListener('click', gdLoad);
+document.getElementById('btnExportFile').addEventListener('click', exportToFile);
+document.getElementById('btnImportFile').addEventListener('click', () => document.getElementById('fileImportInput').click());
+document.getElementById('fileImportInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => restoreFromJson(ev.target.result);
+  r.readAsText(file);
+  e.target.value = '';
 });
 
 // ══════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════
 buildTable();
+// Auto-reconnect Drive if was previously connected
+if (localStorage.getItem('gd_connected') === '1') {
+  setTimeout(() => {
+    // Silent re-auth (no prompt if session still valid)
+    if (window.google) {
+      google.accounts.oauth2.initTokenClient({
+        client_id: GD.CLIENT_ID,
+        scope: GD.SCOPE,
+        prompt: '',
+        callback: resp => {
+          if (!resp.error) {
+            GD.token = resp.access_token;
+            GD.tokenExp = Date.now() + (resp.expires_in - 120) * 1000;
+            GD.connected = true;
+            gdStatus('connected', 'Auto-reconnected');
+            gdFindFile(GD.token).then(f => { if (f) GD.fileId = f.id; });
+          }
+        }
+      }).requestAccessToken({ prompt: '' });
+    }
+  }, 2000);
+}
 // Init notifications after short delay (let page settle)
 setTimeout(initNotifications, 1500);
 </script>
