@@ -1813,7 +1813,7 @@ function gdStatus(state, sub) {
 }
 
 // ── OAuth sign-in ──
-function gdSignIn() {
+function gdSignIn(showChooser = false) {
   return new Promise((resolve, reject) => {
     if (!window.google) { reject(new Error('GSI not loaded')); return; }
     const client = google.accounts.oauth2.initTokenClient({
@@ -1826,7 +1826,9 @@ function gdSignIn() {
         resolve(GD.token);
       },
     });
-    client.requestAccessToken({ prompt: '' });
+    // showChooser=true → always show account picker (manual connect)
+    // showChooser=false → silent refresh if session exists
+    client.requestAccessToken({ prompt: showChooser ? 'select_account' : '' });
   });
 }
 
@@ -1943,7 +1945,7 @@ async function gdLoad() {
 async function gdConnect() {
   try {
     gdStatus('syncing', 'Signing in…');
-    const tok = await gdSignIn();
+    const tok = await gdSignIn(true); // always show account chooser
     const file = await gdFindFile(tok);
     if (file) {
       GD.fileId = file.id;

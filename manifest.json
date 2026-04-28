@@ -1,7 +1,7 @@
 {
   "name": "BudgetGrid",
   "short_name": "BudgetGrid",
-  "description": "Personal budget planner — income, expenses, investments & calendar",
+  "description": "Personal budget planner \u2014 income, expenses, investments & calendar",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
@@ -9,19 +9,28 @@
   "theme_color": "#0A0A0A",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230A0A0A'/><text y='130' x='24' font-size='120' font-family='system-ui'>📊</text></svg>",
+      "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230A0A0A'/><text y='360' x='60' font-size='320' font-family='system-ui'>📊</text></svg>",
-      "sizes": "512x512",
+      "src": "./icon-192.svg",
+      "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
-  "categories": ["finance", "productivity"],
+  "categories": [
+    "finance",
+    "productivity"
+  ],
   "lang": "en",
   "scope": "./",
   "prefer_related_applications": false
