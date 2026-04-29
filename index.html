@@ -249,23 +249,34 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
    DASHBOARD
 ══════════════════════════════════════ */
 .dash-page{padding:16px;}
-.dash-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px;margin-bottom:2px;}
-.dash-sub{color:var(--text-dim);font-size:11px;margin-bottom:18px;}
+.dash-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px;margin-bottom:6px;}
+.dash-sub{color:var(--text);font-size:13px;font-family:'Syne',sans-serif;font-weight:600;margin-bottom:14px;}
+.dash-month-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none;}
+.dash-month-row::-webkit-scrollbar{display:none;}
+.dash-mo-btn{
+  flex-shrink:0;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text-dim);cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+}
+.dash-mo-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.dash-mo-btn:active{transform:scale(.95);}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
-.mc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:background .25s;}
+.mc{background:var(--surface2);border:1px solid var(--border2);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:background .25s;}
 .mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .mc.mi::before{background:var(--income-col);} .mc.me::before{background:var(--expense-col);}
 .mc.mv::before{background:var(--invest-col);} .mc.mn{grid-column:1/-1;} .mc.mn::before{background:var(--accent);}
-.ml{font-family:'Syne',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
-.mv2{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;}
-.ms{font-size:9px;color:var(--text-dimmer);margin-top:3px;}
-.sec-t{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin:18px 0 10px;}
-.ci2{margin-bottom:12px;}
-.ch{display:flex;justify-content:space-between;margin-bottom:4px;}
-.cn{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;}
-.ca{font-size:11px;color:var(--text-dim);}
-.ct{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
-.cf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--expense-col),color-mix(in srgb,var(--expense-col) 60%,var(--card-col)));transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.ml{font-family:'Syne',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text);font-weight:700;margin-bottom:8px;opacity:.7;}
+.mv2{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px;}
+.ms{font-size:10px;color:var(--text-dim);font-weight:600;margin-top:4px;}
+.sec-t{font-family:'Syne',sans-serif;font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin:18px 0 10px;opacity:.8;}
+.ci2{margin-bottom:14px;}
+.ch{display:flex;justify-content:space-between;margin-bottom:5px;}
+.cn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
+.ca{font-size:12px;color:var(--text);font-weight:600;font-family:'DM Mono',monospace;}
+.ct{height:7px;background:var(--surface3);border-radius:4px;overflow:hidden;}
+.cf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--expense-col),color-mix(in srgb,var(--expense-col) 60%,var(--card-col)));transition:width .5s cubic-bezier(.34,1.56,.64,1);}
 
 /* ══════════════════════════════════════
    MODAL
@@ -327,15 +338,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .cal-tbl th,.cal-tbl td{padding:0;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
 
 /* Frozen cols */
-.cc-cat{ position:sticky;left:0;z-index:10;width:120px;min-width:120px;background:var(--surface);transition:background .25s;}
-.cc-name{position:sticky;left:120px;z-index:10;width:160px;min-width:160px;background:var(--surface);transition:background .25s;}
-.cc-due{ position:sticky;left:280px;z-index:10;width:76px;min-width:76px;background:var(--surface);transition:background .25s;}
-.cc-freq{position:sticky;left:356px;z-index:10;width:90px;min-width:90px;background:var(--surface);border-right:2px solid var(--border2)!important;transition:background .25s;}
+.cc-cat{ position:sticky!important;left:0;z-index:12;width:120px;min-width:120px;background:var(--surface);transition:background .25s;}
+.cc-name{position:sticky!important;left:120px;z-index:12;width:160px;min-width:160px;background:var(--surface);transition:background .25s;}
+.cc-due{ position:sticky!important;left:280px;z-index:12;width:76px;min-width:76px;background:var(--surface);transition:background .25s;}
+.cc-freq{position:sticky!important;left:356px;z-index:12;width:90px;min-width:90px;background:var(--surface);border-right:2px solid var(--border2)!important;transition:background .25s;}
 .cc-mo{ width:72px;min-width:72px;}
 
 /* Header */
 .cal-th{height:28px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);text-align:center;background:var(--bg);position:sticky;top:0;z-index:20;transition:background .25s;}
-.cal-th.cc-cat,.cal-th.cc-name,.cal-th.cc-due,.cal-th.cc-freq{z-index:30;}
+.cal-th.cc-cat,.cal-th.cc-name,.cal-th.cc-due,.cal-th.cc-freq{z-index:32!important;}
 .cal-th.cur-mo{color:var(--accent)!important;background:color-mix(in srgb,var(--accent) 8%,var(--bg))!important;}
 .cal-th.past-mo{color:var(--text-dimmer)!important;}
 
@@ -416,7 +427,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .cal-del-btn:hover{color:var(--expense-col);background:color-mix(in srgb,var(--expense-col) 15%,transparent);}
 .cal-del-btn:active{transform:translateY(-50%) scale(.88);}
 /* make cc-cat cell relative so delete btn can be positioned */
-.cc-cat{position:sticky;left:0;z-index:10;width:120px;min-width:120px;background:var(--surface);transition:background .25s;position:relative;}
+/* cc-cat sticky defined above */
 
 /* Category dropdown */
 .cat-sel{
@@ -476,18 +487,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
     <div class="dash-page-wrap">
     <div class="dash-page">
       <div class="dash-title">Overview</div>
-      <div class="dash-sub" id="dSub"></div>
+      <!-- Month selector pills -->
+      <div class="dash-month-row" id="dashMonthRow"></div>
       <div class="mg">
-        <div class="mc mi"><div class="ml">Income</div><div class="mv2 ci" id="dIn">—</div><div class="ms">this month</div></div>
+        <div class="mc mi"><div class="ml">Income</div><div class="mv2 ci" id="dIn">—</div><div class="ms">total income</div></div>
         <div class="mc me"><div class="ml">Expenses</div><div class="mv2 ce" id="dEx">—</div><div class="ms">cash + card + CC due</div></div>
-        <div class="mc mv"><div class="ml">Invested</div><div class="mv2 cv" id="dInv">—</div><div class="ms">this month</div></div>
+        <div class="mc mv"><div class="ml">Invested</div><div class="mv2 cv" id="dInv">—</div><div class="ms">total invested</div></div>
         <div class="mc mn">
           <div class="ml">Net / Carryover → next month</div>
           <div class="mv2" id="dNet">—</div>
           <div class="ms">Income − Expenses − Investments</div>
         </div>
       </div>
-      <div class="sec-t">Top Expenses — Current Month</div>
+      <div class="sec-t">Top Expenses — <span id="dashSecLabel">Current Month</span></div>
       <div id="catBars"></div>
     </div>
     </div>
@@ -1218,9 +1230,38 @@ function updateSums() {
 // ══════════════════════════════════════
 //  DASHBOARD
 // ══════════════════════════════════════
-function updateDash() {
-  const m = MONTHS[CUR];
-  document.getElementById('dSub').textContent = m.label;
+let dashMonthIdx = CUR; // currently selected month index for overview
+
+function buildDashMonthPills() {
+  const row = document.getElementById('dashMonthRow');
+  if (!row) return;
+  row.innerHTML = '';
+  MONTHS.forEach((m, mi) => {
+    const btn = document.createElement('button');
+    btn.className = 'dash-mo-btn' + (mi === dashMonthIdx ? ' active' : '');
+    btn.textContent = m.label;
+    btn.addEventListener('click', () => {
+      dashMonthIdx = mi;
+      document.querySelectorAll('.dash-mo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderDash();
+    });
+    row.appendChild(btn);
+  });
+  // Scroll active pill into view
+  setTimeout(() => {
+    const active = row.querySelector('.active');
+    if (active) active.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  }, 50);
+}
+
+function renderDash() {
+  const m = MONTHS[dashMonthIdx];
+  const isCur = dashMonthIdx === CUR;
+  const label = isCur ? 'Current Month' : m.label;
+  const secLabel = document.getElementById('dashSecLabel');
+  if (secLabel) secLabel.textContent = label;
+
   const { inT, exTotal, invT, net } = monthTotals(m.key);
   document.getElementById('dIn').textContent  = inT    ? '₹'+fmtN(inT)    : '—';
   document.getElementById('dEx').textContent  = exTotal? '₹'+fmtN(exTotal): '—';
@@ -1239,7 +1280,12 @@ function updateDash() {
       <div class="ch"><span class="cn">${c.name}</span><span class="ca">₹${fmtN(c.amt)}</span></div>
       <div class="ct"><div class="cf" style="width:${Math.round(c.amt/mx*100)}%"></div></div>
     </div>`).join('')
-    || '<div style="color:var(--text-dimmer);font-size:11px">No expense data yet</div>';
+    || '<div style="color:var(--text-dimmer);font-size:11px">No expense data for this month</div>';
+}
+
+function updateDash() {
+  buildDashMonthPills();
+  renderDash();
 }
 
 // ══════════════════════════════════════
@@ -1367,7 +1413,7 @@ function buildCalRow(tbody, row, ri) {
   // ── Category (free-text, editable) — FIRST column + delete btn ──
   const tdC = document.createElement('td');
   tdC.className = 'cc-cat cc-cat-cell';
-  tdC.style.position = 'relative';
+  // position handled by CSS sticky — do not override with relative
   const catInp = document.createElement('input');
   catInp.type = 'text';
   catInp.className = 'due-inp';
@@ -1375,7 +1421,10 @@ function buildCalRow(tbody, row, ri) {
   catInp.placeholder = 'Category';
   catInp.value = row.cat || '';
   catInp.addEventListener('blur', e => { row.cat = e.target.value.trim(); schedAS(); });
-  tdC.appendChild(catInp);
+  const catWrap = document.createElement('div');
+  catWrap.style.cssText = 'position:relative;width:100%;height:100%;display:flex;align-items:center;';
+  catWrap.appendChild(catInp);
+  tdC.appendChild(catWrap);
 
   // Delete button — visible on row hover
   const delBtn = document.createElement('button');
@@ -1410,7 +1459,7 @@ function buildCalRow(tbody, row, ri) {
     schedAS();
     showToast('Row deleted');
   });
-  tdC.appendChild(delBtn);
+  catWrap.appendChild(delBtn);
   tr.appendChild(tdC);
 
   // ── Expense name (dropdown from Budget Grid rows) — SECOND column ──
@@ -1773,7 +1822,7 @@ function rescheduleNotifs() {
 //  GOOGLE DRIVE SYNC + LOCAL BACKUP
 // ══════════════════════════════════════
 const GD = {
-  CLIENT_ID: '78583675583-0lqlvs3rmpcr951ivupdsc380sn51qp9.apps.googleusercontent.com',
+  CLIENT_ID: '762017486457-pr5c61sv7mrvdq3mbudt1uvkkk0l07um.apps.googleusercontent.com',
   SCOPE:     'https://www.googleapis.com/auth/drive.file',
   FILE_NAME: 'budgetgrid-backup.json',
   MIME:      'application/json',
