@@ -1805,11 +1805,12 @@ function showBanner(title, sub, urgent = false) {
   setTimeout(() => div.remove(), 8000);
 }
 
-// Request push notification permission
+// Request push notification permission — only called from direct user tap
 async function requestNotifPermission() {
   if (!('Notification' in window)) return false;
   if (Notification.permission === 'granted') return true;
   if (Notification.permission === 'denied') return false;
+  // NOTE: must be called from a user gesture (button click), not on page load
   const result = await Notification.requestPermission();
   return result === 'granted';
 }
@@ -1906,35 +1907,91 @@ async function registerSW() {
   }
 }
 
-// Main notification init
-async function initNotifications() {
-  const granted = await requestNotifPermission();
-  if (granted) {
-    await registerSW();
-    checkTodayDue();
-    await scheduleAllPushNotifs();
-    showToast('🔔 Notifications enabled');
-  } else if (Notification.permission === 'denied') {
-    showBanner('Notifications blocked', 'Enable in browser settings to get payment reminders');
-  } else {
-    // Show a prompt banner
-    const container = document.getElementById('notifContainer');
-    const div = document.createElement('div');
-    div.className = 'notif-banner';
-    div.innerHTML = `
-      <span class="notif-icon">🔔</span>
-      <div class="notif-body">
-        <div class="notif-title">Enable payment reminders?</div>
-        <div class="notif-sub">Get notified 1 day before each due date</div>
-      </div>
-      <button class="notif-close" id="btnEnableNotif" style="background:var(--accent);color:#000;border-radius:8px;padding:4px 10px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;width:auto;">Enable</button>
-    `;
-    container.appendChild(div);
-    document.getElementById('btnEnableNotif').addEventListener('click', async () => {
-      div.remove();
-      await initNotifications();
-    });
+// Main notification init — only call this from a direct user tap
+async function enableNotificationsNow(bannerDiv) {
+  if (bannerDiv) bannerDiv.remove();
+  if (!('Notification' in window)) {
+    showToast('Notifications not supported in this browser');
+    return;
   }
+  try {
+    const result = await Notification.requestPermission();
+    if (result === 'granted') {
+      localStorage.setItem('bgrid_notif', 'granted');
+      await registerSW();
+      checkTodayDue();
+      await scheduleAllPushNotifs();
+      showToast('🔔 Reminders enabled!');
+    } else if (result === 'denied') {
+      localStorage.setItem('bgrid_notif', 'denied');
+      showToast('Notifications blocked — enable in browser settings');
+    } else {
+      // dismissed — ask again next time
+      localStorage.removeItem('bgrid_notif');
+    }
+  } catch(e) {
+    showToast('Could not enable notifications');
+  }
+}
+
+// Show the prompt banner (called once on load if not yet decided)
+function showNotifPromptBanner() {
+  const pref = localStorage.getItem('bgrid_notif');
+  // Don't show if already decided
+  if (pref === 'granted' || pref === 'denied' || pref === 'dismissed') return;
+  // Don't show if browser already has a definitive state
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'denied') {
+    localStorage.setItem('bgrid_notif', 'denied');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    localStorage.setItem('bgrid_notif', 'granted');
+    registerSW().then(() => { checkTodayDue(); scheduleAllPushNotifs(); });
+    return;
+  }
+
+  const container = document.getElementById('notifContainer');
+  const div = document.createElement('div');
+  div.className = 'notif-banner';
+  div.style.cssText = 'align-items:flex-start;';
+  div.innerHTML = `
+    <span class="notif-icon">🔔</span>
+    <div class="notif-body">
+      <div class="notif-title">Enable payment reminders?</div>
+      <div class="notif-sub">Get notified 1 day before each bill due date</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="btnEnableNotif"
+          style="background:var(--accent);color:#000;border:none;border-radius:8px;
+                 padding:6px 14px;font-family:'Syne',sans-serif;font-weight:700;
+                 font-size:11px;cursor:pointer;flex-shrink:0;">
+          Enable
+        </button>
+        <button id="btnDeclineNotif"
+          style="background:var(--surface3);color:var(--text-dim);border:1px solid var(--border);
+                 border-radius:8px;padding:6px 14px;font-family:'Syne',sans-serif;font-weight:600;
+                 font-size:11px;cursor:pointer;flex-shrink:0;">
+          Not now
+        </button>
+      </div>
+    </div>
+    <button class="notif-close" onclick="this.closest('.notif-banner').remove();localStorage.setItem('bgrid_notif','dismissed');">×</button>
+  `;
+  container.appendChild(div);
+
+  document.getElementById('btnEnableNotif').addEventListener('click', () => {
+    enableNotificationsNow(div);
+  });
+  document.getElementById('btnDeclineNotif').addEventListener('click', () => {
+    div.remove();
+    localStorage.setItem('bgrid_notif', 'dismissed');
+    showToast('You can enable reminders anytime from settings');
+  });
+}
+
+// Legacy alias kept for rescheduleNotifs compatibility
+async function initNotifications() {
+  showNotifPromptBanner();
 }
 
 // Re-schedule whenever calendar data changes
@@ -1943,6 +2000,7 @@ function rescheduleNotifs() {
     checkTodayDue();
     scheduleAllPushNotifs();
   }
+}
 }
 
 
@@ -2393,8 +2451,8 @@ if (localStorage.getItem('gd_connected') === '1') {
     }
   }, 2000);
 }
-// Init notifications after short delay (let page settle)
-setTimeout(initNotifications, 1500);
+// Show notification prompt banner after short delay (respects user gesture requirement)
+setTimeout(showNotifPromptBanner, 2000);
 </script>
 </body>
 </html>
