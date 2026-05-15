@@ -350,12 +350,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .cal-tbl{border-collapse:separate;border-spacing:0;min-width:max-content;}
 .cal-tbl th,.cal-tbl td{padding:0;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
 
-/* Frozen cols */
-.cc-cat{ position:sticky!important;left:0;z-index:12;width:110px;min-width:110px;background:var(--surface);transition:background .25s;}
-.cc-name{position:sticky!important;left:110px;z-index:12;width:150px;min-width:150px;background:var(--surface);transition:background .25s;}
-.cc-due{ position:sticky!important;left:260px;z-index:12;width:90px;min-width:90px;background:var(--surface);transition:background .25s;}
-.cc-freq{position:sticky!important;left:350px;z-index:12;width:90px;min-width:90px;background:var(--surface);border-right:2px solid var(--border2)!important;transition:background .25s;}
-.cc-mo{ width:72px;min-width:72px;}
+/* Frozen cols — compact for mobile (total frozen = 280px, fits 375px phones) */
+.cc-cat{ position:sticky!important;left:0;z-index:12;width:90px;min-width:90px;background:var(--surface);transition:background .25s;}
+.cc-name{position:sticky!important;left:90px;z-index:12;width:110px;min-width:110px;background:var(--surface);transition:background .25s;}
+.cc-due{ position:sticky!important;left:200px;z-index:12;width:55px;min-width:55px;background:var(--surface);transition:background .25s;}
+.cc-freq{position:sticky!important;left:255px;z-index:12;width:75px;min-width:75px;background:var(--surface);border-right:2px solid var(--border2)!important;transition:background .25s;}
+.cc-mo{ width:52px;min-width:52px;}
 
 /* Header */
 .cal-th{height:28px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);text-align:center;background:var(--bg);position:sticky;top:0;z-index:20;transition:background .25s;}
@@ -397,11 +397,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 
 /* tick states: 0=none, 1=scheduled(hollow), 2=done(filled) */
 .tick-btn{
-  width:26px;height:26px;border-radius:50%;
+  width:22px;height:22px;border-radius:50%;
   border:2px solid var(--border2);
   background:transparent;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:13px;transition:all .15s;color:transparent;
+  font-size:11px;transition:all .15s;color:transparent;
 }
 /* scheduled — hollow circle with accent border */
 .tick-cell.scheduled .tick-btn{
@@ -1658,7 +1658,44 @@ function buildCalRow(tbody, row, ri) {
   // ── Month tick cells: 0=none, 1=scheduled, 2=done ──
   CAL_MONTHS.forEach((m) => {
     const td = document.createElement('td');
-    const state = (row.ticks && row.ticks[m.key]) || 0; // 0,1,2
+
+    // Determine if this month is an "active" month for this row's frequency
+    function isScheduledMonth(row, mkey) {
+      const freq = row.calFreq || 'monthly';
+      const [yr, mo] = mkey.split('-').map(Number); // mo is 1-based
+
+      if (freq === 'monthly' || freq === 'alt') {
+        // alt: every 2nd month — use dueDay as anchor if set, else always show
+        if (freq === 'alt') {
+          // use the first CAL_MONTHS month as base
+          const baseIdx = CAL_MONTHS.findIndex(x => x.key === mkey);
+          return baseIdx % 2 === 0;
+        }
+        return true; // monthly always active
+      }
+      if (freq === 'quarterly') {
+        // Active in due month and every 3rd month from it
+        const dueMo = parseInt(row.dueMon) || mo; // fallback to current
+        return (mo - dueMo + 12) % 3 === 0;
+      }
+      if (freq === 'annual') {
+        // Active only in the due month
+        const dueMo = parseInt(row.dueMon);
+        if (!dueMo) return false;
+        return mo === dueMo;
+      }
+      return true;
+    }
+
+    const manualState = row.ticks && row.ticks[m.key] != null ? row.ticks[m.key] : -1;
+    // -1 means no manual override; compute auto state
+    let state;
+    if (manualState >= 0) {
+      state = manualState;
+    } else {
+      // Auto: if this is an active month for the freq, show scheduled (1), else 0
+      state = isScheduledMonth(row, m.key) ? 1 : 0;
+    }
 
     function stateClass(s){ return s===1?'scheduled':s===2?'done':''; }
     function stateIcon(s) { return s===2?'✓':''; }
@@ -1676,15 +1713,31 @@ function buildCalRow(tbody, row, ri) {
 
     btn.addEventListener('click', () => {
       if (!row.ticks) row.ticks = {};
-      const cur = row.ticks[m.key] || 0;
-      const next = (cur + 1) % 3;
-      row.ticks[m.key] = next;
+      const cur = row.ticks[m.key] != null ? row.ticks[m.key] : (isScheduledMonth(row, m.key) ? 1 : 0);
+      // Cycle: scheduled(1) → done(2) → none(0) → scheduled(1)...
+      // For auto-scheduled months: none resets to auto (delete key)
+      let next;
+      if (cur === 0) next = 1;
+      else if (cur === 1) next = 2;
+      else next = 0;
+
+      if (next === 0 && isScheduledMonth(row, m.key)) {
+        // Delete manual override so auto-schedule kicks back in (shows yellow)
+        delete row.ticks[m.key];
+        // Display as scheduled since it's an active month
+        next = 1;
+        row.ticks[m.key] = -1; // sentinel: manually cleared
+      } else {
+        row.ticks[m.key] = next;
+      }
+
+      const displayState = (row.ticks[m.key] === -1) ? 1 : next;
       td.className = 'tick-cell cc-mo' +
         (m.isCur ? ' cur-cell' : '') +
         (m.isPast ? ' past' : '') +
-        (next ? ' '+stateClass(next) : '');
-      btn.innerHTML = stateIcon(next);
-      btn.title = stateLabel(next);
+        (displayState ? ' '+stateClass(displayState) : '');
+      btn.innerHTML = stateIcon(displayState);
+      btn.title = stateLabel(displayState);
       updateCalBars();
       rescheduleNotifs();
       schedAS();
@@ -1724,7 +1777,6 @@ function updateCalBars() {
   CAL_MONTHS.forEach(m => {
     const total = S.calRows.length;
     const done  = S.calRows.filter(r => r.ticks && r.ticks[m.key] === 2).length;
-    const sched = S.calRows.filter(r => r.ticks && r.ticks[m.key] === 1).length;
     const pct   = total > 0 ? Math.round(done / total * 100) : 0;
     const bar = document.getElementById(`calbar-${m.key}`);
     if (bar) bar.style.width = pct + '%';
