@@ -4,7 +4,7 @@
 const CACHE_NAME   = 'budgetgrid-v1';
 const CACHE_URLS   = [
   './',
-  './index.html',
+  './BGrid.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -54,7 +54,7 @@ self.addEventListener('fetch', e => {
       }).catch(() => {
         // Offline fallback for navigation requests
         if (e.request.mode === 'navigate') {
-          return caches.match('./index.html');
+          return caches.match('./BGrid.html');
         }
       });
     })
