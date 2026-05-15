@@ -2,7 +2,7 @@
   "name": "BudgetGrid",
   "short_name": "BudgetGrid",
   "description": "Personal budget planner \u2014 income, expenses, investments & calendar",
-  "start_url": "./BGrid.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0A0A0A",
