@@ -476,8 +476,87 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .cal-mo-fill{height:100%;border-radius:2px;background:var(--income-col);transition:width .3s;}
 
 /* ══════════════════════════════════════
-   GOALS PAGE
+   AUTH LOCK SCREEN
 ══════════════════════════════════════ */
+#authScreen{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;
+  transition:opacity .3s;
+}
+#authScreen.hiding{opacity:0;pointer-events:none;}
+.auth-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:28px;
+  letter-spacing:-.5px;color:var(--text);margin-bottom:6px;
+}
+.auth-logo span{color:var(--accent);}
+.auth-sub{
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:var(--text-dim);margin-bottom:40px;letter-spacing:.5px;
+}
+.auth-dots{
+  display:flex;gap:16px;margin-bottom:36px;
+}
+.auth-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border2);
+  background:transparent;transition:all .15s;
+}
+.auth-dot.filled{
+  background:var(--accent);border-color:var(--accent);
+  transform:scale(1.1);
+}
+.auth-dot.error{
+  background:var(--expense-col);border-color:var(--expense-col);
+  animation:dotShake .3s;
+}
+@keyframes dotShake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-4px);}
+  75%{transform:translateX(4px);}
+}
+.pin-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;width:100%;max-width:280px;margin-bottom:24px;
+}
+.pin-btn{
+  height:64px;border-radius:18px;
+  border:1px solid var(--border2);background:var(--surface);
+  color:var(--text);font-family:'Syne',sans-serif;
+  font-weight:700;font-size:22px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;transition:all .1s;user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.pin-btn sub{font-size:8px;font-weight:400;color:var(--text-dimmer);letter-spacing:1px;text-transform:uppercase;}
+.pin-btn:active{transform:scale(.93);background:var(--surface2);}
+.pin-btn.del{font-size:20px;background:transparent;border-color:transparent;color:var(--text-dim);}
+.pin-btn.bio{font-size:26px;background:transparent;border-color:transparent;}
+.auth-msg{
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
+  color:var(--text-dim);text-align:center;min-height:18px;margin-bottom:16px;
+}
+.auth-msg.err{color:var(--expense-col);}
+.auth-msg.ok{color:var(--income-col);}
+.auth-setup-wrap{width:100%;max-width:280px;text-align:center;}
+.auth-setup-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:16px;
+  color:var(--text);margin-bottom:8px;
+}
+.auth-setup-sub{
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:var(--text-dim);margin-bottom:28px;
+}
+
+/* Settings auth section */
+.auth-settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);
+}
+.auth-settings-label{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);}
+.auth-settings-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:2px;}
+
 .goal-card{
   background:var(--surface);border:1px solid var(--border2);
   border-radius:16px;padding:16px;position:relative;overflow:hidden;
@@ -519,9 +598,39 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 </head>
 <body>
 
+<!-- ══════════════════════════════════════
+     AUTH LOCK SCREEN
+══════════════════════════════════════ -->
+<div id="authScreen">
+  <div class="auth-logo">Budget<span>Grid</span></div>
+  <div class="auth-sub" id="authSubtitle">Enter your PIN</div>
+  <div class="auth-dots" id="authDots">
+    <div class="auth-dot" id="d0"></div>
+    <div class="auth-dot" id="d1"></div>
+    <div class="auth-dot" id="d2"></div>
+    <div class="auth-dot" id="d3"></div>
+  </div>
+  <div class="auth-msg" id="authMsg"></div>
+  <div class="pin-grid" id="pinGrid">
+    <button class="pin-btn" data-n="1" onclick="pinTap(1)">1</button>
+    <button class="pin-btn" data-n="2" onclick="pinTap(2)">2<sub>ABC</sub></button>
+    <button class="pin-btn" data-n="3" onclick="pinTap(3)">3<sub>DEF</sub></button>
+    <button class="pin-btn" data-n="4" onclick="pinTap(4)">4<sub>GHI</sub></button>
+    <button class="pin-btn" data-n="5" onclick="pinTap(5)">5<sub>JKL</sub></button>
+    <button class="pin-btn" data-n="6" onclick="pinTap(6)">6<sub>MNO</sub></button>
+    <button class="pin-btn" data-n="7" onclick="pinTap(7)">7<sub>PQRS</sub></button>
+    <button class="pin-btn" data-n="8" onclick="pinTap(8)">8<sub>TUV</sub></button>
+    <button class="pin-btn" data-n="9" onclick="pinTap(9)">9<sub>WXYZ</sub></button>
+    <button class="pin-btn bio" id="bioBtnMain" onclick="tryBiometric()" title="Use fingerprint">🪪</button>
+    <button class="pin-btn" data-n="0" onclick="pinTap(0)">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+</div>
+
 <div class="top-bar">
   <div class="app-logo">Budget<span>Grid</span></div>
   <div class="top-actions">
+    <button class="btn-icon" id="btnAuth" title="Lock / PIN Settings">🔒</button>
     <button class="btn-icon" id="btnDrive" title="Backup & Restore">☁️</button>
     <button class="btn-icon" id="btnTheme" title="Toggle theme">🌙</button>
     <button class="btn-icon" id="btnSave" title="Save locally">💾</button>
@@ -620,6 +729,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
     </div>
 
     <button class="bs" id="closeBackupModal" style="width:100%;">Close</button>
+  </div>
+</div>
+
+<!-- AUTH SETTINGS MODAL -->
+<div class="mo" id="authModal">
+  <div class="ms2">
+    <div class="mh"></div>
+    <div class="mt">🔒 Lock Settings</div>
+    <div id="authSettingsBody">
+      <!-- filled dynamically -->
+    </div>
+    <button class="bs" id="closeAuthModal" style="width:100%;margin-top:10px;">Close</button>
   </div>
 </div>
 
@@ -2353,6 +2474,315 @@ document.getElementById('fileImportInput').addEventListener('change', e => {
 });
 
 // ══════════════════════════════════════
+//  AUTHENTICATION  (PIN + Biometric)
+// ══════════════════════════════════════
+const AUTH = {
+  PIN_KEY:   'bgrid_pin_hash',
+  BIO_KEY:   'bgrid_bio_enabled',
+  LOCK_KEY:  'bgrid_lock_enabled',
+  CRED_KEY:  'bgrid_bio_cred',
+};
+
+// Simple non-cryptographic hash for PIN (good enough for local lock)
+function hashPin(pin) {
+  let h = 5381;
+  for (let i = 0; i < pin.length; i++) h = ((h << 5) + h) ^ pin.charCodeAt(i);
+  return (h >>> 0).toString(36);
+}
+
+const isLockEnabled  = () => localStorage.getItem(AUTH.LOCK_KEY) === '1';
+const isBioEnabled   = () => localStorage.getItem(AUTH.BIO_KEY)  === '1';
+const getSavedPinHash= () => localStorage.getItem(AUTH.PIN_KEY)  || null;
+
+// ── PIN state ──
+let pinBuffer   = '';
+let pinSetupStep = 0;   // 0=off, 1=enter first, 2=confirm
+let pinSetupFirst= '';
+let authUnlocked = false;
+
+function updateDots(len, mode) {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('d' + i);
+    if (!d) return;
+    d.className = 'auth-dot' + (i < len ? ' filled' : '') + (mode === 'error' ? ' error' : '');
+  }
+}
+
+function setAuthMsg(msg, type) {
+  const el = document.getElementById('authMsg');
+  if (!el) return;
+  el.textContent = msg;
+  el.className   = 'auth-msg' + (type ? ' ' + type : '');
+}
+
+function pinTap(n) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += String(n);
+  updateDots(pinBuffer.length, '');
+
+  if (pinBuffer.length === 4) {
+    setTimeout(() => handlePinComplete(pinBuffer), 120);
+  }
+}
+
+function pinDel() {
+  if (!pinBuffer.length) return;
+  pinBuffer = pinBuffer.slice(0, -1);
+  updateDots(pinBuffer.length, '');
+}
+
+function handlePinComplete(pin) {
+  if (pinSetupStep === 1) {
+    // First entry during setup
+    pinSetupFirst = pin;
+    pinSetupStep  = 2;
+    pinBuffer     = '';
+    updateDots(0, '');
+    setAuthMsg('Enter PIN again to confirm', '');
+    document.getElementById('authSubtitle').textContent = 'Confirm your PIN';
+    return;
+  }
+  if (pinSetupStep === 2) {
+    // Confirm entry during setup
+    if (pin === pinSetupFirst) {
+      localStorage.setItem(AUTH.PIN_KEY,    hashPin(pin));
+      localStorage.setItem(AUTH.LOCK_KEY,   '1');
+      pinSetupStep = 0;
+      pinSetupFirst= '';
+      pinBuffer    = '';
+      updateDots(0, '');
+      setAuthMsg('PIN set! App is now protected ✓', 'ok');
+      // Close setup mode and show normal lock
+      setTimeout(() => {
+        document.getElementById('authSubtitle').textContent = 'Enter your PIN';
+        setAuthMsg('', '');
+        unlockApp();
+      }, 1000);
+    } else {
+      pinBuffer = '';
+      updateDots(0, 'error');
+      setAuthMsg("PINs don't match — try again", 'err');
+      pinSetupStep  = 1;
+      pinSetupFirst = '';
+      setTimeout(() => {
+        document.getElementById('authSubtitle').textContent = 'Set a 4-digit PIN';
+        updateDots(0, '');
+        setAuthMsg('', '');
+      }, 1200);
+    }
+    return;
+  }
+
+  // Normal unlock: verify PIN
+  if (hashPin(pin) === getSavedPinHash()) {
+    setAuthMsg('✓ Unlocked', 'ok');
+    updateDots(4, '');
+    setTimeout(unlockApp, 350);
+  } else {
+    pinBuffer = '';
+    updateDots(0, 'error');
+    setAuthMsg('Wrong PIN — try again', 'err');
+    setTimeout(() => { updateDots(0, ''); setAuthMsg('', ''); }, 1000);
+  }
+}
+
+function unlockApp() {
+  authUnlocked = true;
+  const screen = document.getElementById('authScreen');
+  if (!screen) return;
+  screen.classList.add('hiding');
+  setTimeout(() => { screen.style.display = 'none'; }, 320);
+}
+
+// ── Biometric via WebAuthn ──
+async function isBioAvailable() {
+  if (!window.PublicKeyCredential) return false;
+  try {
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch(e) { return false; }
+}
+
+// Register a biometric credential (called once during setup)
+async function registerBiometric() {
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const userId    = crypto.getRandomValues(new Uint8Array(16));
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp:   { name: 'BudgetGrid', id: location.hostname },
+        user: { id: userId, name: 'budget_user', displayName: 'BudgetGrid User' },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+        },
+        timeout: 60000,
+      }
+    });
+    // Store credential id for later assertion
+    const credId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    localStorage.setItem(AUTH.CRED_KEY, credId);
+    localStorage.setItem(AUTH.BIO_KEY, '1');
+    return true;
+  } catch(e) {
+    console.warn('Bio register:', e);
+    return false;
+  }
+}
+
+// Verify biometric (fingerprint/face) — called on lock screen
+async function tryBiometric() {
+  if (!isBioEnabled()) {
+    setAuthMsg('Fingerprint not set up yet', 'err');
+    setTimeout(() => setAuthMsg('', ''), 1500);
+    return;
+  }
+  try {
+    setAuthMsg('Touch fingerprint sensor…', '');
+    const credIdStr = localStorage.getItem(AUTH.CRED_KEY);
+    const credId    = Uint8Array.from(atob(credIdStr), c => c.charCodeAt(0));
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ type: 'public-key', id: credId }],
+        userVerification: 'required',
+        timeout: 60000,
+      }
+    });
+    setAuthMsg('✓ Fingerprint verified', 'ok');
+    setTimeout(unlockApp, 350);
+  } catch(e) {
+    setAuthMsg('Fingerprint failed — use PIN', 'err');
+    setTimeout(() => setAuthMsg('', ''), 2000);
+  }
+}
+
+// ── Show/hide bio button based on availability ──
+async function initAuthUI() {
+  const bioAvail = await isBioAvailable();
+  const bioBtn   = document.getElementById('bioBtnMain');
+  if (bioBtn) bioBtn.style.display = bioAvail ? '' : 'none';
+
+  // If no lock enabled, skip lock screen entirely
+  if (!isLockEnabled()) {
+    unlockApp();
+    return;
+  }
+
+  // Try biometric first if enabled and available
+  if (isBioEnabled() && bioAvail) {
+    setTimeout(tryBiometric, 500); // small delay so screen renders first
+  }
+}
+
+// ── Auth Settings Modal ──
+async function openAuthSettings() {
+  const bioAvail  = await isBioAvailable();
+  const lockOn    = isLockEnabled();
+  const bioOn     = isBioEnabled();
+  const hasPin    = !!getSavedPinHash();
+
+  const body = document.getElementById('authSettingsBody');
+  body.innerHTML = `
+    <div class="auth-settings-row">
+      <div>
+        <div class="auth-settings-label">App Lock</div>
+        <div class="auth-settings-sub">${lockOn ? 'PIN required on open' : 'Disabled'}</div>
+      </div>
+      ${lockOn
+        ? `<button class="bs" id="btnDisableLock" style="padding:8px 16px;font-size:12px;">Disable</button>`
+        : `<button class="bp" id="btnEnableLock" style="padding:8px 16px;font-size:12px;width:auto;">Enable</button>`}
+    </div>
+    ${lockOn ? `
+    <div class="auth-settings-row">
+      <div>
+        <div class="auth-settings-label">Change PIN</div>
+        <div class="auth-settings-sub">${hasPin ? 'Reset your 4-digit PIN' : 'Set a PIN'}</div>
+      </div>
+      <button class="bs" id="btnChangePin" style="padding:8px 16px;font-size:12px;">Change</button>
+    </div>
+    ${bioAvail ? `
+    <div class="auth-settings-row">
+      <div>
+        <div class="auth-settings-label">Fingerprint</div>
+        <div class="auth-settings-sub">${bioOn ? 'Enabled — tap to disable' : 'Not enabled'}</div>
+      </div>
+      ${bioOn
+        ? `<button class="bs" id="btnDisableBio" style="padding:8px 16px;font-size:12px;">Disable</button>`
+        : `<button class="bp" id="btnEnableBio" style="padding:8px 16px;font-size:12px;width:auto;">Enable</button>`}
+    </div>` : `
+    <div class="auth-settings-row" style="opacity:.5;">
+      <div>
+        <div class="auth-settings-label">Fingerprint</div>
+        <div class="auth-settings-sub">Not available on this device/browser</div>
+      </div>
+    </div>`}` : ''}
+  `;
+
+  document.getElementById('authModal').classList.add('open');
+
+  document.getElementById('btnDisableLock')?.addEventListener('click', () => {
+    localStorage.removeItem(AUTH.LOCK_KEY);
+    localStorage.removeItem(AUTH.PIN_KEY);
+    localStorage.removeItem(AUTH.BIO_KEY);
+    localStorage.removeItem(AUTH.CRED_KEY);
+    showToast('App lock disabled');
+    document.getElementById('authModal').classList.remove('open');
+  });
+
+  document.getElementById('btnEnableLock')?.addEventListener('click', () => {
+    document.getElementById('authModal').classList.remove('open');
+    startPinSetup();
+  });
+
+  document.getElementById('btnChangePin')?.addEventListener('click', () => {
+    document.getElementById('authModal').classList.remove('open');
+    startPinSetup();
+  });
+
+  document.getElementById('btnEnableBio')?.addEventListener('click', async () => {
+    const ok = await registerBiometric();
+    if (ok) { showToast('Fingerprint enabled ✓'); document.getElementById('authModal').classList.remove('open'); }
+    else     showToast('Fingerprint setup failed — try again');
+  });
+
+  document.getElementById('btnDisableBio')?.addEventListener('click', () => {
+    localStorage.removeItem(AUTH.BIO_KEY);
+    localStorage.removeItem(AUTH.CRED_KEY);
+    showToast('Fingerprint disabled');
+    document.getElementById('authModal').classList.remove('open');
+  });
+}
+
+function startPinSetup() {
+  // Show lock screen in setup mode
+  pinBuffer     = '';
+  pinSetupStep  = 1;
+  pinSetupFirst = '';
+  updateDots(0, '');
+  setAuthMsg('', '');
+  const screen = document.getElementById('authScreen');
+  screen.style.display = 'flex';
+  screen.classList.remove('hiding');
+  document.getElementById('authSubtitle').textContent = 'Set a 4-digit PIN';
+}
+
+// Wire up buttons
+document.getElementById('btnAuth').addEventListener('click', () => {
+  if (!authUnlocked) return; // can't open settings while locked
+  openAuthSettings();
+});
+document.getElementById('closeAuthModal').addEventListener('click', () => {
+  document.getElementById('authModal').classList.remove('open');
+});
+document.getElementById('authModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+
+// ══════════════════════════════════════
 //  GOALS
 // ══════════════════════════════════════
 if (!S.goals || !Array.isArray(S.goals)) S.goals = [];
@@ -2479,6 +2909,8 @@ document.getElementById('confirmGoal').addEventListener('click', () => {
 // ══════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════
+// Auth lock runs first — unlocks app when PIN/bio verified
+initAuthUI();
 buildTable();
 // Auto-reconnect Drive if was previously connected
 if (localStorage.getItem('gd_connected') === '1') {
