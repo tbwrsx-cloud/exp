@@ -1,7 +1,7 @@
 // BudgetGrid Service Worker
 // Handles: offline caching, push notification scheduling
 
-const CACHE_NAME   = 'budgetgrid-v1';
+const CACHE_NAME   = 'budgetgrid-v2';
 const CACHE_URLS   = [
   './',
   './BGrid.html',
