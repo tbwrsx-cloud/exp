@@ -120,6 +120,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .grid-page{ overflow:hidden; }
 .grid-scroll{ flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; }
 
+/* Assets page needs overflow visible for sub-panels */
+#pageAssets{ overflow:hidden; }
+
 /* Dashboard page — single vertical scroll */
 .dash-page-wrap{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
@@ -676,6 +679,23 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
   </div>
 </div>
 
+<!-- ASSETS SUB-TAB BAR — fixed, only shown when Assets page is active -->
+<div id="alTabBar" style="display:none;position:fixed;top:52px;left:0;right:0;z-index:90;
+  background:var(--surface);border-bottom:2px solid var(--border2);height:44px;">
+  <div style="display:flex;height:100%;">
+    <button id="alTabAssets" onclick="switchALTab('assets')"
+      style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;
+             letter-spacing:1px;text-transform:uppercase;border:none;
+             border-bottom:3px solid var(--accent);background:none;
+             color:var(--accent);cursor:pointer;">🏗 Assets</button>
+    <button id="alTabLiab" onclick="switchALTab('liab')"
+      style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;
+             letter-spacing:1px;text-transform:uppercase;border:none;
+             border-bottom:3px solid transparent;background:none;
+             color:var(--text-dim);cursor:pointer;">💳 Liabilities</button>
+  </div>
+</div>
+
 <div class="main">
   <!-- GRID -->
   <div class="page active grid-page" id="pageBudget">
@@ -741,40 +761,31 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 
 <!-- ASSETS & LIABILITIES PAGE -->
 <div class="page" id="pageAssets">
-  <!-- Sub-tab bar -->
-  <div id="alTabBar" style="display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;height:42px;">
-    <button id="alTabAssets" onclick="switchALTab('assets')" style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;border-bottom:3px solid var(--accent);background:none;color:var(--accent);cursor:pointer;">🏗 Assets</button>
-    <button id="alTabLiab" onclick="switchALTab('liab')" style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;border-bottom:3px solid transparent;background:none;color:var(--text-dim);cursor:pointer;">💳 Liabilities</button>
+
+  <!-- ASSETS PANEL -->
+  <div id="tabAssets" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:44px;">
+    <div style="padding:10px 12px;position:sticky;top:44px;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">Assets</span>
+        <span id="assetCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);"></span>
+      </div>
+      <button id="btnAddAsset" class="bp" style="width:100%;margin-top:8px;padding:10px;font-size:13px;">+ Add Asset</button>
+    </div>
+    <div id="assetsList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 
-  <!-- Panels container -->
-  <div style="position:relative;flex:1;min-height:0;">
-
-    <!-- ASSETS PANEL -->
-    <div id="tabAssets" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block;">
-      <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
-        <div>
-          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Assets</span>
-          <span id="assetCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
-        </div>
-        <button id="btnAddAsset" class="bp" style="width:auto;padding:7px 16px;font-size:12px;">+ Add</button>
+  <!-- LIABILITIES PANEL -->
+  <div id="tabLiab" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:44px;display:none;">
+    <div style="padding:10px 12px;position:sticky;top:44px;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">Liabilities</span>
+        <span id="liabCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);"></span>
       </div>
-      <div id="assetsList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+      <button id="btnAddLiab" class="bp" style="width:100%;margin-top:8px;padding:10px;font-size:13px;">+ Add Liability</button>
     </div>
-
-    <!-- LIABILITIES PANEL -->
-    <div id="tabLiab" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;">
-      <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
-        <div>
-          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Liabilities</span>
-          <span id="liabCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
-        </div>
-        <button id="btnAddLiab" class="bp" style="width:auto;padding:7px 16px;font-size:12px;">+ Add</button>
-      </div>
-      <div id="liabList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
-
+    <div id="liabList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
   </div>
+
 </div>
 
 <!-- ASSET MODAL -->
@@ -2174,6 +2185,9 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.page).classList.add('active');
+    // Show assets tab bar only on assets page
+    const tabBar = document.getElementById('alTabBar');
+    if (tabBar) tabBar.style.display = btn.dataset.page === 'pageAssets' ? 'block' : 'none';
     if (btn.dataset.page === 'pageDash')   updateDash();
     if (btn.dataset.page === 'pageCal')    buildCalTable();
     if (btn.dataset.page === 'pageGoals')  buildGoalsList();
@@ -3595,12 +3609,14 @@ function deleteLiab(id) {
 // ── Sub-tab switching ──
 function switchALTab(tab) {
   const isAsset = tab === 'assets';
-  document.getElementById('tabAssets').style.display = isAsset ? 'block' : 'none';
-  document.getElementById('tabLiab').style.display   = isAsset ? 'none'  : 'block';
-  document.getElementById('alTabAssets').style.color       = isAsset ? 'var(--accent)'  : 'var(--text-dim)';
-  document.getElementById('alTabAssets').style.borderBottom= isAsset ? '3px solid var(--accent)' : '3px solid transparent';
-  document.getElementById('alTabLiab').style.color         = isAsset ? 'var(--text-dim)': 'var(--accent)';
-  document.getElementById('alTabLiab').style.borderBottom  = isAsset ? '3px solid transparent' : '3px solid var(--accent)';
+  document.getElementById('tabAssets').style.display = isAsset ? 'flex' : 'none';
+  document.getElementById('tabLiab').style.display   = isAsset ? 'none' : 'flex';
+  document.getElementById('tabAssets').style.flexDirection = 'column';
+  document.getElementById('tabLiab').style.flexDirection   = 'column';
+  document.getElementById('alTabAssets').style.color        = isAsset ? 'var(--accent)'   : 'var(--text-dim)';
+  document.getElementById('alTabAssets').style.borderBottom = isAsset ? '3px solid var(--accent)' : '3px solid transparent';
+  document.getElementById('alTabLiab').style.color          = isAsset ? 'var(--text-dim)' : 'var(--accent)';
+  document.getElementById('alTabLiab').style.borderBottom   = isAsset ? '3px solid transparent' : '3px solid var(--accent)';
   if (isAsset) buildAssetsList(); else buildLiabList();
 }
 
