@@ -557,6 +557,45 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 .auth-settings-label{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);}
 .auth-settings-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:2px;}
 
+/* ══════════════════════════════════════
+   ASSETS & LIABILITIES
+══════════════════════════════════════ */
+.al-tab{transition:color .15s,border-color .15s;}
+.al-tab.active{color:var(--accent)!important;border-bottom-color:var(--accent)!important;}
+.al-panel{display:flex;flex-direction:column;}
+.al-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:14px;position:relative;overflow:hidden;transition:background .25s;}
+.al-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.al-card-id{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:3px 8px;border-radius:10px;flex-shrink:0;}
+.al-card-id.asset{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);}
+.al-card-id.liab{color:var(--expense-col);background:color-mix(in srgb,var(--expense-col) 12%,transparent);border:1px solid color-mix(in srgb,var(--expense-col) 25%,transparent);}
+.al-card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);flex:1;}
+.al-card-subtitle{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:2px;}
+.al-card-actions{display:flex;gap:6px;flex-shrink:0;margin-left:4px;}
+.al-card-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.al-card-btn:active{transform:scale(.9);}
+.al-card-btn.del{color:var(--expense-col);border-color:color-mix(in srgb,var(--expense-col) 30%,transparent);}
+.al-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;margin-top:8px;}
+.al-field{display:flex;flex-direction:column;gap:1px;}
+.al-field-label{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dimmer);}
+.al-field-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);word-break:break-word;}
+.al-field.full{grid-column:1/-1;}
+.al-field-val.money{color:var(--income-col);font-weight:500;}
+.al-field-val.debt{color:var(--expense-col);font-weight:500;}
+.al-type-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-bottom:6px;}
+.al-type-badge.imm{background:color-mix(in srgb,var(--invest-col) 15%,transparent);color:var(--invest-col);border:1px solid color-mix(in srgb,var(--invest-col) 30%,transparent);}
+.al-type-badge.mov{background:color-mix(in srgb,var(--card-col) 15%,transparent);color:var(--card-col);border:1px solid color-mix(in srgb,var(--card-col) 30%,transparent);}
+.al-type-badge.loan-badge{background:color-mix(in srgb,var(--expense-col) 15%,transparent);color:var(--expense-col);border:1px solid color-mix(in srgb,var(--expense-col) 30%,transparent);}
+.al-empty{text-align:center;padding:40px 20px;color:var(--text-dimmer);font-family:'Syne',sans-serif;font-size:12px;}
+.al-empty .ei{font-size:36px;display:block;margin-bottom:10px;}
+.loan-progress{margin-top:10px;}
+.loan-bar-bg{height:6px;background:var(--surface3);border-radius:4px;overflow:hidden;}
+.loan-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--income-col),var(--accent));transition:width .4s;}
+.loan-bar-label{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:3px;}
+.al-net-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.al-net-item{text-align:center;}
+.al-net-label{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
+.al-net-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;margin-top:2px;}
+
 .goal-card{
   background:var(--surface);border:1px solid var(--border2);
   border-radius:16px;padding:16px;position:relative;overflow:hidden;
@@ -694,10 +733,226 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 
 <nav class="bottom-nav">
   <button class="nav-item active" data-page="pageBudget"><span class="ni">📊</span>Grid</button>
-  <button class="nav-item" data-page="pageCal"><span class="ni">📅</span>Calendar</button>
+  <button class="nav-item" data-page="pageCal"><span class="ni">📅</span>Cal</button>
   <button class="nav-item" data-page="pageDash"><span class="ni">🏠</span>Overview</button>
   <button class="nav-item" data-page="pageGoals"><span class="ni">🎯</span>Goals</button>
+  <button class="nav-item" data-page="pageAssets"><span class="ni">🏦</span>Assets</button>
 </nav>
+
+<!-- ASSETS & LIABILITIES PAGE -->
+<div class="page" id="pageAssets" style="flex-direction:column;">
+  <!-- Sub-tab bar -->
+  <div style="display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;">
+    <button class="al-tab active" data-tab="tabAssets" style="flex:1;padding:10px 0;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;background:none;color:var(--accent);border-bottom:2px solid var(--accent);cursor:pointer;">🏗 Assets</button>
+    <button class="al-tab" data-tab="tabLiab" style="flex:1;padding:10px 0;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;background:none;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">💳 Liabilities</button>
+  </div>
+
+  <!-- ASSETS TAB -->
+  <div id="tabAssets" class="al-panel" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+      <div>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Assets</span>
+        <span id="assetCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
+      </div>
+      <button id="btnAddAsset" class="bp" style="width:auto;padding:8px 18px;font-size:12px;">+ Add Asset</button>
+    </div>
+    <div id="assetsList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+
+  <!-- LIABILITIES TAB -->
+  <div id="tabLiab" class="al-panel" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;">
+    <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+      <div>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Liabilities</span>
+        <span id="liabCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
+      </div>
+      <button id="btnAddLiab" class="bp" style="width:auto;padding:8px 18px;font-size:12px;">+ Add Liability</button>
+    </div>
+    <div id="liabList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
+
+<!-- ASSET MODAL -->
+<div class="mo" id="assetModal">
+  <div class="ms2" style="max-height:90dvh;overflow-y:auto;border-radius:24px 24px 0 0;">
+    <div class="mh"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="mt" id="assetModalTitle" style="margin-bottom:0;">Add Asset</div>
+      <span id="assetIdBadge" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:4px 10px;border-radius:20px;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);"></span>
+    </div>
+
+    <!-- Common fields -->
+    <div class="mf-row">
+      <div class="mf"><label>Date of Acquisition</label><input class="mi2" id="aDate" type="date"/></div>
+      <div class="mf"><label>Asset Type</label>
+        <select class="mi2" id="aType" onchange="toggleAssetTypeFields()">
+          <option value="immovable">Immovable</option>
+          <option value="movable">Movable</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf"><label>Cost of Acquisition (₹)</label><input class="mi2" id="aCost" type="text" inputmode="numeric" placeholder="e.g. 50,00,000"/></div>
+
+    <!-- IMMOVABLE fields -->
+    <div id="immovableFields">
+      <div style="font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:14px 0 10px;opacity:.8;">IMMOVABLE ASSET DETAILS</div>
+      <div class="mf"><label>Immovable Asset Type</label>
+        <select class="mi2" id="aImmType">
+          <option value="res_land">Residential Land</option>
+          <option value="com_land">Commercial Land</option>
+          <option value="agr_land">Agricultural Land</option>
+          <option value="res_bldg">Residential Building</option>
+          <option value="com_bldg">Commercial Building</option>
+          <option value="farmhouse">Farm House</option>
+          <option value="farm_orch">Farm / Orchard</option>
+          <option value="trees">Trees</option>
+          <option value="educational">Educational</option>
+        </select>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Location</label><input class="mi2" id="aLocation" type="text" placeholder="City / Town"/></div>
+        <div class="mf"><label>Survey No</label><input class="mi2" id="aSurveyNo" type="text" placeholder="Survey #"/></div>
+      </div>
+      <div class="mf"><label>Address</label><input class="mi2" id="aAddress" type="text" placeholder="Full address"/></div>
+      <div class="mf-row">
+        <div class="mf"><label>Land Size</label><input class="mi2" id="aLandSize" type="text" placeholder="e.g. 2400 sqft"/></div>
+        <div class="mf"><label>Building Size</label><input class="mi2" id="aBldgSize" type="text" placeholder="e.g. 1200 sqft"/></div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Registrar</label><input class="mi2" id="aRegistrar" type="text" placeholder="Sub-registrar office"/></div>
+        <div class="mf"><label>Reg. Doc No</label><input class="mi2" id="aRegDocNo" type="text" placeholder="Doc number"/></div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Revenue Doc (Patta/Chitta)</label><input class="mi2" id="aRevDoc" type="text" placeholder="Patta/Chitta no"/></div>
+        <div class="mf"><label>House Tax No</label><input class="mi2" id="aHouseTax" type="text" placeholder="Tax no"/></div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Latest EC Date</label><input class="mi2" id="aECDate" type="date"/></div>
+        <div class="mf"><label>Linked Loan (Liability ID)</label>
+          <select class="mi2" id="aLoanRef"><option value="">— None —</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVABLE fields -->
+    <div id="movableFields" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--invest-col);margin:14px 0 10px;opacity:.8;">MOVABLE ASSET DETAILS</div>
+      <div class="mf-row">
+        <div class="mf"><label>Asset Sub-Type</label>
+          <select class="mi2" id="aMoveType">
+            <option value="vehicle">Vehicle</option>
+            <option value="equipment">Equipment</option>
+            <option value="commodity">Commodity</option>
+            <option value="luxury">Luxury Items</option>
+          </select>
+        </div>
+        <div class="mf"><label>Category</label>
+          <select class="mi2" id="aMoveCategory">
+            <option value="household">Household</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Location</label><input class="mi2" id="aMoveLocation" type="text" placeholder="Location"/></div>
+        <div class="mf"><label>Qty / Weight</label><input class="mi2" id="aMoveQty" type="text" placeholder="e.g. 1 unit / 500g"/></div>
+      </div>
+      <div class="mf"><label>Address</label><input class="mi2" id="aMoveAddress" type="text" placeholder="Where is it kept?"/></div>
+      <div class="mf-row">
+        <div class="mf"><label>Current Value (₹)</label><input class="mi2" id="aMoveValue" type="text" inputmode="numeric" placeholder="Current value"/></div>
+        <div class="mf"><label>Value As-On Date</label><input class="mi2" id="aMoveValueDate" type="date"/></div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Date of Purchase</label><input class="mi2" id="aMovePurchDate" type="date"/></div>
+        <div class="mf"><label>Warranty Valid Till</label><input class="mi2" id="aMoveWarranty" type="date"/></div>
+      </div>
+      <div class="mf-row">
+        <div class="mf"><label>Service Period</label><input class="mi2" id="aMoveService" type="text" placeholder="e.g. Every 6 months"/></div>
+        <div class="mf"><label>Insurance Type</label>
+          <select class="mi2" id="aMoveInsurance">
+            <option value="">— None —</option>
+            <option value="comp_vehicle">Comprehensive Vehicle</option>
+            <option value="third_party">Third Party Vehicle</option>
+            <option value="household">Household</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="ma">
+      <button class="bs" id="cancelAssetModal">Cancel</button>
+      <button class="bp" id="confirmAsset">Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIABILITY MODAL -->
+<div class="mo" id="liabModal">
+  <div class="ms2" style="max-height:90dvh;overflow-y:auto;border-radius:24px 24px 0 0;">
+    <div class="mh"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="mt" id="liabModalTitle" style="margin-bottom:0;">Add Liability</div>
+      <span id="liabIdBadge" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--expense-col);background:color-mix(in srgb,var(--expense-col) 12%,transparent);padding:4px 10px;border-radius:20px;border:1px solid color-mix(in srgb,var(--expense-col) 30%,transparent);"></span>
+    </div>
+
+    <div class="mf-row">
+      <div class="mf"><label>Liability Type</label>
+        <select class="mi2" id="lType"><option value="loan">Loan</option></select>
+      </div>
+      <div class="mf"><label>Loan Type</label>
+        <select class="mi2" id="lLoanType">
+          <option value="home">Home Loan</option>
+          <option value="personal">Personal Loan</option>
+          <option value="vehicle">Vehicle Loan</option>
+          <option value="business">Business Loan</option>
+          <option value="education">Education Loan</option>
+          <option value="lap">Loan Against Property</option>
+          <option value="gold">Gold Loan</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Loan Amount (₹)</label><input class="mi2" id="lAmount" type="text" inputmode="numeric" placeholder="Principal amount"/></div>
+      <div class="mf"><label>Tenure (months)</label><input class="mi2" id="lTenure" type="text" inputmode="numeric" placeholder="e.g. 240"/></div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Start Date</label><input class="mi2" id="lStartDate" type="date" onchange="calcLoan()"/></div>
+      <div class="mf"><label>End Date</label><input class="mi2" id="lEndDate" type="date"/></div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Interest Rate (%)</label><input class="mi2" id="lRate" type="text" inputmode="numeric" placeholder="e.g. 8.5" onchange="calcLoan()"/></div>
+      <div class="mf"><label>Interest Type</label>
+        <select class="mi2" id="lRateType">
+          <option value="fixed">Fixed</option>
+          <option value="variable">Variable / Floating</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf-row">
+      <div class="mf"><label>Processing Fees Paid (₹)</label><input class="mi2" id="lProcFees" type="text" inputmode="numeric" placeholder="0"/></div>
+      <div class="mf"><label>Prepayment Penalty</label><input class="mi2" id="lPrepay" type="text" placeholder="e.g. 2% of outstanding"/></div>
+    </div>
+
+    <!-- Auto-calculated display -->
+    <div style="background:var(--surface3);border-radius:12px;padding:14px;margin:8px 0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">Monthly EMI</div><div id="lcEMI" style="font-family:'DM Mono',monospace;font-weight:700;font-size:16px;color:var(--accent);margin-top:4px;">—</div></div>
+      <div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">Total Interest</div><div id="lcInterest" style="font-family:'DM Mono',monospace;font-weight:700;font-size:16px;color:var(--expense-col);margin-top:4px;">—</div></div>
+      <div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">Total Payable</div><div id="lcTotal" style="font-family:'DM Mono',monospace;font-weight:700;font-size:14px;color:var(--text);margin-top:4px;">—</div></div>
+      <div><div style="font-size:9px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">End Date (calc)</div><div id="lcEndDate" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-dim);margin-top:4px;">—</div></div>
+    </div>
+
+    <div class="mf"><label>Linked Asset ID</label>
+      <select class="mi2" id="lAssetRef"><option value="">— None —</option></select>
+    </div>
+
+    <div class="ma">
+      <button class="bs" id="cancelLiabModal">Cancel</button>
+      <button class="bp" id="confirmLiab">Save Liability</button>
+    </div>
+  </div>
+</div>
 
 <!-- DRIVE / BACKUP MODAL -->
 <div class="mo" id="backupModal">
@@ -1914,9 +2169,10 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.page).classList.add('active');
-    if (btn.dataset.page === 'pageDash') updateDash();
-    if (btn.dataset.page === 'pageCal') buildCalTable();
-    if (btn.dataset.page === 'pageGoals') buildGoalsList();
+    if (btn.dataset.page === 'pageDash')   updateDash();
+    if (btn.dataset.page === 'pageCal')    buildCalTable();
+    if (btn.dataset.page === 'pageGoals')  buildGoalsList();
+    if (btn.dataset.page === 'pageAssets') { buildAssetsList(); buildLiabList(); }
   });
 });
 
@@ -2375,6 +2631,8 @@ async function gdLoad() {
     mergeDefaults();
     if (!Array.isArray(S.calRows)) S.calRows = defaultCalRows();
     if (!Array.isArray(S.goals)) S.goals = [];
+    if (!Array.isArray(S.assets)) S.assets = [];
+    if (!Array.isArray(S.liabs)) S.liabs = [];
     persist();
     buildTable();
     applyTheme(S.theme);
@@ -2439,6 +2697,8 @@ function restoreFromJson(json) {
     mergeDefaults();
     if (!Array.isArray(S.calRows)) S.calRows = defaultCalRows();
     if (!Array.isArray(S.goals)) S.goals = [];
+    if (!Array.isArray(S.assets)) S.assets = [];
+    if (!Array.isArray(S.liabs)) S.liabs = [];
     persist();
     buildTable();
     applyTheme(S.theme);
@@ -2904,6 +3164,446 @@ document.getElementById('confirmGoal').addEventListener('click', () => {
   buildGoalsList();
   schedAS();
   showToast(editGoalId ? 'Goal updated ✓' : `"${name}" added ✓`);
+});
+
+// ══════════════════════════════════════
+//  ASSETS & LIABILITIES
+// ══════════════════════════════════════
+if (!S.assets || !Array.isArray(S.assets)) S.assets = [];
+if (!S.liabs  || !Array.isArray(S.liabs))  S.liabs  = [];
+
+// ── ID generators ──
+function genAssetId() {
+  const n = (S.assets.length + 1).toString().padStart(4, '0');
+  return 'AST-' + n;
+}
+function genLiabId() {
+  const n = (S.liabs.length + 1).toString().padStart(4, '0');
+  return 'LIB-' + n;
+}
+
+// ── Label maps ──
+const IMMO_LABELS = {
+  res_land:'Residential Land', com_land:'Commercial Land', agr_land:'Agricultural Land',
+  res_bldg:'Residential Building', com_bldg:'Commercial Building', farmhouse:'Farm House',
+  farm_orch:'Farm / Orchard', trees:'Trees', educational:'Educational'
+};
+const MOVE_LABELS = { vehicle:'Vehicle', equipment:'Equipment', commodity:'Commodity', luxury:'Luxury Items' };
+const LOAN_LABELS = {
+  home:'Home Loan', personal:'Personal Loan', vehicle:'Vehicle Loan',
+  business:'Business Loan', education:'Education Loan', lap:'Loan Against Property',
+  gold:'Gold Loan', other:'Other'
+};
+const INS_LABELS = { comp_vehicle:'Comprehensive Vehicle', third_party:'Third Party Vehicle', household:'Household', other:'Other' };
+
+// ── EMI Calculator ──
+function calcEMI(principal, annualRate, months) {
+  if (!principal || !annualRate || !months) return 0;
+  const r = annualRate / 12 / 100;
+  return Math.round(principal * r * Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1));
+}
+
+function calcLoan() {
+  const principal = parseN(document.getElementById('lAmount')?.value || '');
+  const rate      = parseFloat(document.getElementById('lRate')?.value || '') || 0;
+  const tenure    = parseInt(document.getElementById('lTenure')?.value || '') || 0;
+  const startDate = document.getElementById('lStartDate')?.value;
+
+  if (principal && rate && tenure) {
+    const emi      = calcEMI(principal, rate, tenure);
+    const totalPay = emi * tenure;
+    const interest = totalPay - principal;
+    document.getElementById('lcEMI').textContent      = '₹' + fmtN(emi);
+    document.getElementById('lcInterest').textContent = '₹' + fmtN(interest);
+    document.getElementById('lcTotal').textContent    = '₹' + fmtN(totalPay);
+    // Calculate end date
+    if (startDate) {
+      const end = new Date(startDate);
+      end.setMonth(end.getMonth() + tenure);
+      document.getElementById('lcEndDate').textContent = end.toLocaleDateString('en-IN',{month:'short',year:'numeric'});
+      // Auto-fill end date input
+      document.getElementById('lEndDate').value = end.toISOString().split('T')[0];
+    }
+  } else {
+    ['lcEMI','lcInterest','lcTotal','lcEndDate'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.textContent = '—';
+    });
+  }
+}
+
+// ── Toggle asset type fields ──
+function toggleAssetTypeFields() {
+  const type = document.getElementById('aType')?.value;
+  document.getElementById('immovableFields').style.display = type === 'immovable' ? '' : 'none';
+  document.getElementById('movableFields').style.display   = type === 'movable'   ? '' : 'none';
+}
+
+// ── Populate loan ref selects ──
+function populateLoanRef() {
+  const sel = document.getElementById('aLoanRef');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— None —</option>';
+  S.liabs.forEach(l => {
+    const op = document.createElement('option');
+    op.value = l.id; op.textContent = l.id + ' — ' + LOAN_LABELS[l.loanType] + ' ₹' + fmtN(l.amount);
+    sel.appendChild(op);
+  });
+}
+function populateAssetRef() {
+  const sel = document.getElementById('lAssetRef');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— None —</option>';
+  S.assets.forEach(a => {
+    const op = document.createElement('option');
+    const label = a.type === 'immovable'
+      ? (IMMO_LABELS[a.immType] || a.immType)
+      : (MOVE_LABELS[a.moveType] || a.moveType);
+    op.value = a.id; op.textContent = a.id + ' — ' + label + (a.location ? ' · ' + a.location : '');
+    sel.appendChild(op);
+  });
+}
+
+// ── Asset Modal ──
+let editAssetId = null;
+function openAssetModal(id) {
+  editAssetId = id || null;
+  const ex = id ? S.assets.find(a => a.id === id) : null;
+  const newId = ex ? ex.id : genAssetId();
+
+  document.getElementById('assetModalTitle').textContent = ex ? 'Edit Asset' : 'Add Asset';
+  document.getElementById('assetIdBadge').textContent = newId;
+
+  // Reset
+  ['aDate','aCost','aLocation','aAddress','aSurveyNo','aLandSize','aBldgSize',
+   'aRegistrar','aRegDocNo','aRevDoc','aHouseTax','aECDate',
+   'aMoveLocation','aMoveAddress','aMoveQty','aMoveValue','aMoveValueDate',
+   'aMovePurchDate','aMoveWarranty','aMoveService'
+  ].forEach(id => { const el=document.getElementById(id); if(el) el.value = ex ? (ex[id.replace(/^a/,'').toLowerCase()]||ex[id]||'') : ''; });
+
+  if (ex) {
+    document.getElementById('aDate').value     = ex.date || '';
+    document.getElementById('aCost').value     = ex.cost || '';
+    document.getElementById('aType').value     = ex.type || 'immovable';
+    document.getElementById('aImmType').value  = ex.immType || 'res_land';
+    document.getElementById('aLocation').value = ex.location || '';
+    document.getElementById('aAddress').value  = ex.address || '';
+    document.getElementById('aSurveyNo').value = ex.surveyNo || '';
+    document.getElementById('aLandSize').value = ex.landSize || '';
+    document.getElementById('aBldgSize').value = ex.bldgSize || '';
+    document.getElementById('aRegistrar').value= ex.registrar || '';
+    document.getElementById('aRegDocNo').value = ex.regDocNo || '';
+    document.getElementById('aRevDoc').value   = ex.revDoc || '';
+    document.getElementById('aHouseTax').value = ex.houseTax || '';
+    document.getElementById('aECDate').value   = ex.ecDate || '';
+    document.getElementById('aMoveType').value     = ex.moveType || 'vehicle';
+    document.getElementById('aMoveCategory').value = ex.moveCategory || 'household';
+    document.getElementById('aMoveLocation').value = ex.moveLocation || '';
+    document.getElementById('aMoveAddress').value  = ex.moveAddress || '';
+    document.getElementById('aMoveQty').value      = ex.moveQty || '';
+    document.getElementById('aMoveValue').value    = ex.moveValue || '';
+    document.getElementById('aMoveValueDate').value= ex.moveValueDate || '';
+    document.getElementById('aMovePurchDate').value= ex.movePurchDate || '';
+    document.getElementById('aMoveWarranty').value = ex.moveWarranty || '';
+    document.getElementById('aMoveService').value  = ex.moveService || '';
+    document.getElementById('aMoveInsurance').value= ex.moveInsurance || '';
+  } else {
+    document.getElementById('aDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('aType').value = 'immovable';
+  }
+
+  populateLoanRef();
+  if (ex) document.getElementById('aLoanRef').value = ex.loanRef || '';
+  toggleAssetTypeFields();
+  document.getElementById('assetModal').classList.add('open');
+}
+
+document.getElementById('btnAddAsset').addEventListener('click', () => openAssetModal(null));
+document.getElementById('cancelAssetModal').addEventListener('click', () => document.getElementById('assetModal').classList.remove('open'));
+document.getElementById('assetModal').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+document.getElementById('confirmAsset').addEventListener('click', () => {
+  const type = document.getElementById('aType').value;
+  const cost = document.getElementById('aCost').value.replace(/,/g,'').trim();
+  if (!cost) { showToast('Enter cost of acquisition'); return; }
+
+  const badge = document.getElementById('assetIdBadge').textContent;
+  const asset = {
+    id:   editAssetId || badge,
+    date: document.getElementById('aDate').value,
+    type, cost,
+    // Immovable
+    immType:   document.getElementById('aImmType').value,
+    location:  document.getElementById('aLocation').value,
+    address:   document.getElementById('aAddress').value,
+    surveyNo:  document.getElementById('aSurveyNo').value,
+    landSize:  document.getElementById('aLandSize').value,
+    bldgSize:  document.getElementById('aBldgSize').value,
+    registrar: document.getElementById('aRegistrar').value,
+    regDocNo:  document.getElementById('aRegDocNo').value,
+    revDoc:    document.getElementById('aRevDoc').value,
+    houseTax:  document.getElementById('aHouseTax').value,
+    ecDate:    document.getElementById('aECDate').value,
+    loanRef:   document.getElementById('aLoanRef').value,
+    // Movable
+    moveType:     document.getElementById('aMoveType').value,
+    moveCategory: document.getElementById('aMoveCategory').value,
+    moveLocation: document.getElementById('aMoveLocation').value,
+    moveAddress:  document.getElementById('aMoveAddress').value,
+    moveQty:      document.getElementById('aMoveQty').value,
+    moveValue:    document.getElementById('aMoveValue').value,
+    moveValueDate:document.getElementById('aMoveValueDate').value,
+    movePurchDate:document.getElementById('aMovePurchDate').value,
+    moveWarranty: document.getElementById('aMoveWarranty').value,
+    moveService:  document.getElementById('aMoveService').value,
+    moveInsurance:document.getElementById('aMoveInsurance').value,
+  };
+  if (editAssetId) {
+    const idx = S.assets.findIndex(a => a.id === editAssetId);
+    if (idx >= 0) S.assets[idx] = asset;
+  } else {
+    S.assets.push(asset);
+  }
+  document.getElementById('assetModal').classList.remove('open');
+  buildAssetsList();
+  schedAS();
+  showToast((editAssetId ? 'Asset updated' : 'Asset added') + ' ✓ ' + asset.id);
+});
+
+// ── Liability Modal ──
+let editLiabId = null;
+function openLiabModal(id) {
+  editLiabId = id || null;
+  const ex = id ? S.liabs.find(l => l.id === id) : null;
+  const newId = ex ? ex.id : genLiabId();
+
+  document.getElementById('liabModalTitle').textContent = ex ? 'Edit Liability' : 'Add Liability';
+  document.getElementById('liabIdBadge').textContent = newId;
+
+  document.getElementById('lLoanType').value  = ex?.loanType   || 'home';
+  document.getElementById('lAmount').value    = ex?.amount     || '';
+  document.getElementById('lTenure').value    = ex?.tenure     || '';
+  document.getElementById('lStartDate').value = ex?.startDate  || new Date().toISOString().split('T')[0];
+  document.getElementById('lEndDate').value   = ex?.endDate    || '';
+  document.getElementById('lRate').value      = ex?.rate       || '';
+  document.getElementById('lRateType').value  = ex?.rateType   || 'fixed';
+  document.getElementById('lProcFees').value  = ex?.procFees   || '';
+  document.getElementById('lPrepay').value    = ex?.prepay     || '';
+
+  populateAssetRef();
+  if (ex) document.getElementById('lAssetRef').value = ex.assetRef || '';
+
+  // Reset calculated fields
+  ['lcEMI','lcInterest','lcTotal','lcEndDate'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.textContent = '—';
+  });
+  if (ex) calcLoan();
+
+  document.getElementById('liabModal').classList.add('open');
+}
+
+document.getElementById('btnAddLiab').addEventListener('click', () => openLiabModal(null));
+document.getElementById('cancelLiabModal').addEventListener('click', () => document.getElementById('liabModal').classList.remove('open'));
+document.getElementById('liabModal').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+document.getElementById('lAmount').addEventListener('input', calcLoan);
+document.getElementById('lTenure').addEventListener('input', calcLoan);
+
+document.getElementById('confirmLiab').addEventListener('click', () => {
+  const amount = document.getElementById('lAmount').value.replace(/,/g,'').trim();
+  const tenure = document.getElementById('lTenure').value.trim();
+  const rate   = document.getElementById('lRate').value.trim();
+  if (!amount) { showToast('Enter loan amount'); return; }
+
+  const badge = document.getElementById('liabIdBadge').textContent;
+  const emi   = (amount && rate && tenure) ? calcEMI(parseN(amount), parseFloat(rate), parseInt(tenure)) : 0;
+  const liab  = {
+    id:        editLiabId || badge,
+    loanType:  document.getElementById('lLoanType').value,
+    amount, tenure, rate,
+    startDate: document.getElementById('lStartDate').value,
+    endDate:   document.getElementById('lEndDate').value,
+    rateType:  document.getElementById('lRateType').value,
+    procFees:  document.getElementById('lProcFees').value,
+    prepay:    document.getElementById('lPrepay').value,
+    emi:       String(emi),
+    totalInt:  String(emi * parseInt(tenure||0) - parseN(amount)),
+    assetRef:  document.getElementById('lAssetRef').value,
+  };
+  if (editLiabId) {
+    const idx = S.liabs.findIndex(l => l.id === editLiabId);
+    if (idx >= 0) S.liabs[idx] = liab;
+  } else {
+    S.liabs.push(liab);
+  }
+  document.getElementById('liabModal').classList.remove('open');
+  buildLiabList();
+  schedAS();
+  showToast((editLiabId ? 'Liability updated' : 'Liability added') + ' ✓ ' + liab.id);
+});
+
+// ── Build Assets List ──
+function buildAssetsList() {
+  const container = document.getElementById('assetsList');
+  if (!container) return;
+  const totalCost = S.assets.reduce((s, a) => s + parseN(a.cost), 0);
+  document.getElementById('assetCount').textContent =
+    S.assets.length + ' assets · ₹' + fmtN(totalCost);
+
+  if (!S.assets.length) {
+    container.innerHTML = `<div class="al-empty"><span class="ei">🏗</span>No assets yet.<br>Tap <b>+ Add Asset</b> to register one.</div>`;
+    return;
+  }
+  container.innerHTML = '';
+  S.assets.forEach(a => {
+    const isImm = a.type === 'immovable';
+    const card  = document.createElement('div');
+    card.className = 'al-card';
+
+    const typeLabel   = isImm ? (IMMO_LABELS[a.immType] || a.immType) : (MOVE_LABELS[a.moveType] || a.moveType);
+    const locLabel    = isImm ? a.location : a.moveLocation;
+    const linkedLiab  = a.loanRef ? S.liabs.find(l => l.id === a.loanRef) : null;
+
+    card.innerHTML = `
+      <div class="al-card-header">
+        <div style="flex:1;">
+          <span class="al-type-badge ${isImm?'imm':'mov'}">${isImm?'🏛 Immovable':'🚗 Movable'}</span>
+          <div class="al-card-title">${typeLabel}</div>
+          ${locLabel ? `<div class="al-card-subtitle">📍 ${locLabel}</div>` : ''}
+        </div>
+        <span class="al-card-id asset">${a.id}</span>
+        <div class="al-card-actions">
+          <button class="al-card-btn" onclick="openAssetModal('${a.id}')">✏️</button>
+          <button class="al-card-btn del" onclick="deleteAsset('${a.id}')">✕</button>
+        </div>
+      </div>
+      <div class="al-grid">
+        <div class="al-field"><span class="al-field-label">Acquisition Date</span><span class="al-field-val">${a.date||'—'}</span></div>
+        <div class="al-field"><span class="al-field-label">Cost</span><span class="al-field-val money">₹${fmtN(a.cost)||'—'}</span></div>
+        ${isImm ? `
+          ${a.address   ? `<div class="al-field full"><span class="al-field-label">Address</span><span class="al-field-val">${a.address}</span></div>` : ''}
+          ${a.surveyNo  ? `<div class="al-field"><span class="al-field-label">Survey No</span><span class="al-field-val">${a.surveyNo}</span></div>` : ''}
+          ${a.landSize  ? `<div class="al-field"><span class="al-field-label">Land Size</span><span class="al-field-val">${a.landSize}</span></div>` : ''}
+          ${a.bldgSize  ? `<div class="al-field"><span class="al-field-label">Building Size</span><span class="al-field-val">${a.bldgSize}</span></div>` : ''}
+          ${a.regDocNo  ? `<div class="al-field"><span class="al-field-label">Reg. Doc No</span><span class="al-field-val">${a.regDocNo}</span></div>` : ''}
+          ${a.revDoc    ? `<div class="al-field"><span class="al-field-label">Revenue Doc</span><span class="al-field-val">${a.revDoc}</span></div>` : ''}
+          ${a.houseTax  ? `<div class="al-field"><span class="al-field-label">House Tax No</span><span class="al-field-val">${a.houseTax}</span></div>` : ''}
+          ${a.ecDate    ? `<div class="al-field"><span class="al-field-label">EC Date</span><span class="al-field-val">${a.ecDate}</span></div>` : ''}
+          ${a.registrar ? `<div class="al-field"><span class="al-field-label">Registrar</span><span class="al-field-val">${a.registrar}</span></div>` : ''}
+        ` : `
+          ${a.moveCategory? `<div class="al-field"><span class="al-field-label">Category</span><span class="al-field-val">${a.moveCategory}</span></div>` : ''}
+          ${a.moveQty     ? `<div class="al-field"><span class="al-field-label">Qty / Weight</span><span class="al-field-val">${a.moveQty}</span></div>` : ''}
+          ${a.moveValue   ? `<div class="al-field"><span class="al-field-label">Current Value</span><span class="al-field-val money">₹${fmtN(a.moveValue)}</span></div>` : ''}
+          ${a.moveValueDate?`<div class="al-field"><span class="al-field-label">Value As-On</span><span class="al-field-val">${a.moveValueDate}</span></div>` : ''}
+          ${a.movePurchDate?`<div class="al-field"><span class="al-field-label">Purchase Date</span><span class="al-field-val">${a.movePurchDate}</span></div>` : ''}
+          ${a.moveWarranty? `<div class="al-field"><span class="al-field-label">Warranty Till</span><span class="al-field-val">${a.moveWarranty}</span></div>` : ''}
+          ${a.moveService ? `<div class="al-field"><span class="al-field-label">Service Period</span><span class="al-field-val">${a.moveService}</span></div>` : ''}
+          ${a.moveInsurance? `<div class="al-field"><span class="al-field-label">Insurance</span><span class="al-field-val">${INS_LABELS[a.moveInsurance]||a.moveInsurance}</span></div>` : ''}
+          ${a.moveAddress ? `<div class="al-field full"><span class="al-field-label">Address</span><span class="al-field-val">${a.moveAddress}</span></div>` : ''}
+        `}
+        ${linkedLiab ? `<div class="al-field full"><span class="al-field-label">Linked Loan</span><span class="al-field-val debt">${linkedLiab.id} · ${LOAN_LABELS[linkedLiab.loanType]} · ₹${fmtN(linkedLiab.emi)}/mo</span></div>` : ''}
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function deleteAsset(id) {
+  if (!confirm('Delete asset ' + id + '?')) return;
+  S.assets = S.assets.filter(a => a.id !== id);
+  buildAssetsList();
+  schedAS();
+  showToast('Asset deleted');
+}
+
+// ── Build Liabilities List ──
+function buildLiabList() {
+  const container = document.getElementById('liabList');
+  if (!container) return;
+  const totalDebt = S.liabs.reduce((s, l) => s + parseN(l.amount), 0);
+  document.getElementById('liabCount').textContent =
+    S.liabs.length + ' liabilities · ₹' + fmtN(totalDebt);
+
+  if (!S.liabs.length) {
+    container.innerHTML = `<div class="al-empty"><span class="ei">💳</span>No liabilities yet.<br>Tap <b>+ Add Liability</b> to record a loan.</div>`;
+    return;
+  }
+  container.innerHTML = '';
+  S.liabs.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'al-card';
+    const principal = parseN(l.amount);
+    const emi       = parseN(l.emi);
+    const tenure    = parseInt(l.tenure) || 0;
+    const totalPay  = emi * tenure;
+    const interest  = totalPay - principal;
+    const linkedAsset = l.assetRef ? S.assets.find(a => a.id === l.assetRef) : null;
+
+    // Progress: months elapsed
+    let pct = 0, moElapsed = 0, moLeft = 0;
+    if (l.startDate && tenure) {
+      const start = new Date(l.startDate);
+      const now   = new Date();
+      moElapsed = Math.max(0, Math.floor((now - start) / (1000*60*60*24*30.44)));
+      moLeft    = Math.max(0, tenure - moElapsed);
+      pct       = Math.min(100, Math.round(moElapsed / tenure * 100));
+    }
+
+    card.innerHTML = `
+      <div class="al-card-header">
+        <div style="flex:1;">
+          <span class="al-type-badge loan-badge">💳 ${LOAN_LABELS[l.loanType]||l.loanType}</span>
+          <div class="al-card-title">₹${fmtN(l.amount)}</div>
+          <div class="al-card-subtitle">${l.rate ? l.rate + '% ' + (l.rateType||'') : ''} · ${tenure} months</div>
+        </div>
+        <span class="al-card-id liab">${l.id}</span>
+        <div class="al-card-actions">
+          <button class="al-card-btn" onclick="openLiabModal('${l.id}')">✏️</button>
+          <button class="al-card-btn del" onclick="deleteLiab('${l.id}')">✕</button>
+        </div>
+      </div>
+      <div class="al-grid">
+        <div class="al-field"><span class="al-field-label">Monthly EMI</span><span class="al-field-val money">₹${fmtN(l.emi)||'—'}</span></div>
+        <div class="al-field"><span class="al-field-label">Total Interest</span><span class="al-field-val debt">₹${fmtN(interest)||'—'}</span></div>
+        <div class="al-field"><span class="al-field-label">Start Date</span><span class="al-field-val">${l.startDate||'—'}</span></div>
+        <div class="al-field"><span class="al-field-label">End Date</span><span class="al-field-val">${l.endDate||'—'}</span></div>
+        ${l.rate ? `<div class="al-field"><span class="al-field-label">Interest Rate</span><span class="al-field-val">${l.rate}% (${l.rateType||'fixed'})</span></div>` : ''}
+        ${l.procFees ? `<div class="al-field"><span class="al-field-label">Processing Fees</span><span class="al-field-val debt">₹${fmtN(l.procFees)}</span></div>` : ''}
+        ${l.prepay   ? `<div class="al-field"><span class="al-field-label">Prepayment</span><span class="al-field-val">${l.prepay}</span></div>` : ''}
+        ${linkedAsset ? `<div class="al-field full"><span class="al-field-label">Linked Asset</span><span class="al-field-val">${linkedAsset.id} · ${linkedAsset.type==='immovable'?(IMMO_LABELS[linkedAsset.immType]||linkedAsset.immType):(MOVE_LABELS[linkedAsset.moveType]||linkedAsset.moveType)}</span></div>` : ''}
+      </div>
+      ${tenure ? `
+      <div class="loan-progress">
+        <div class="loan-bar-bg"><div class="loan-bar-fill" style="width:${pct}%"></div></div>
+        <div class="loan-bar-label"><span>${pct}% repaid · ${moElapsed} mo done</span><span>${moLeft} months left</span></div>
+      </div>` : ''}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function deleteLiab(id) {
+  if (!confirm('Delete liability ' + id + '?')) return;
+  S.liabs = S.liabs.filter(l => l.id !== id);
+  buildLiabList();
+  schedAS();
+  showToast('Liability deleted');
+}
+
+// ── Sub-tab switching ──
+document.querySelectorAll('.al-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.al-tab').forEach(b => {
+      b.classList.remove('active');
+      b.style.color = 'var(--text-dim)';
+      b.style.borderBottomColor = 'transparent';
+    });
+    btn.classList.add('active');
+    btn.style.color = 'var(--accent)';
+    btn.style.borderBottomColor = 'var(--accent)';
+    document.querySelectorAll('.al-panel').forEach(p => p.style.display = 'none');
+    const target = document.getElementById(btn.dataset.tab);
+    if (target) { target.style.display = 'flex'; }
+    if (btn.dataset.tab === 'tabAssets') buildAssetsList();
+    if (btn.dataset.tab === 'tabLiab')   buildLiabList();
+  });
 });
 
 // ══════════════════════════════════════
