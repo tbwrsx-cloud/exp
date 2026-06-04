@@ -740,35 +740,40 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font
 </nav>
 
 <!-- ASSETS & LIABILITIES PAGE -->
-<div class="page" id="pageAssets" style="flex-direction:column;">
+<div class="page" id="pageAssets">
   <!-- Sub-tab bar -->
-  <div style="display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;">
-    <button class="al-tab active" data-tab="tabAssets" style="flex:1;padding:10px 0;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;background:none;color:var(--accent);border-bottom:2px solid var(--accent);cursor:pointer;">🏗 Assets</button>
-    <button class="al-tab" data-tab="tabLiab" style="flex:1;padding:10px 0;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;background:none;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">💳 Liabilities</button>
+  <div id="alTabBar" style="display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;height:42px;">
+    <button id="alTabAssets" onclick="switchALTab('assets')" style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;border-bottom:3px solid var(--accent);background:none;color:var(--accent);cursor:pointer;">🏗 Assets</button>
+    <button id="alTabLiab" onclick="switchALTab('liab')" style="flex:1;height:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;border-bottom:3px solid transparent;background:none;color:var(--text-dim);cursor:pointer;">💳 Liabilities</button>
   </div>
 
-  <!-- ASSETS TAB -->
-  <div id="tabAssets" class="al-panel" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
-      <div>
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Assets</span>
-        <span id="assetCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
-      </div>
-      <button id="btnAddAsset" class="bp" style="width:auto;padding:8px 18px;font-size:12px;">+ Add Asset</button>
-    </div>
-    <div id="assetsList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
-  </div>
+  <!-- Panels container -->
+  <div style="position:relative;flex:1;min-height:0;">
 
-  <!-- LIABILITIES TAB -->
-  <div id="tabLiab" class="al-panel" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;">
-    <div style="padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
-      <div>
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Liabilities</span>
-        <span id="liabCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
+    <!-- ASSETS PANEL -->
+    <div id="tabAssets" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block;">
+      <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+        <div>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Assets</span>
+          <span id="assetCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
+        </div>
+        <button id="btnAddAsset" class="bp" style="width:auto;padding:7px 16px;font-size:12px;">+ Add</button>
       </div>
-      <button id="btnAddLiab" class="bp" style="width:auto;padding:8px 18px;font-size:12px;">+ Add Liability</button>
+      <div id="assetsList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
     </div>
-    <div id="liabList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+
+    <!-- LIABILITIES PANEL -->
+    <div id="tabLiab" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;">
+      <div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border);">
+        <div>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Liabilities</span>
+          <span id="liabCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-left:8px;"></span>
+        </div>
+        <button id="btnAddLiab" class="bp" style="width:auto;padding:7px 16px;font-size:12px;">+ Add</button>
+      </div>
+      <div id="liabList" style="padding:12px;display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -2172,7 +2177,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     if (btn.dataset.page === 'pageDash')   updateDash();
     if (btn.dataset.page === 'pageCal')    buildCalTable();
     if (btn.dataset.page === 'pageGoals')  buildGoalsList();
-    if (btn.dataset.page === 'pageAssets') { buildAssetsList(); buildLiabList(); }
+    if (btn.dataset.page === 'pageAssets') { switchALTab('assets'); }
   });
 });
 
@@ -3588,23 +3593,16 @@ function deleteLiab(id) {
 }
 
 // ── Sub-tab switching ──
-document.querySelectorAll('.al-tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.al-tab').forEach(b => {
-      b.classList.remove('active');
-      b.style.color = 'var(--text-dim)';
-      b.style.borderBottomColor = 'transparent';
-    });
-    btn.classList.add('active');
-    btn.style.color = 'var(--accent)';
-    btn.style.borderBottomColor = 'var(--accent)';
-    document.querySelectorAll('.al-panel').forEach(p => p.style.display = 'none');
-    const target = document.getElementById(btn.dataset.tab);
-    if (target) { target.style.display = 'flex'; }
-    if (btn.dataset.tab === 'tabAssets') buildAssetsList();
-    if (btn.dataset.tab === 'tabLiab')   buildLiabList();
-  });
-});
+function switchALTab(tab) {
+  const isAsset = tab === 'assets';
+  document.getElementById('tabAssets').style.display = isAsset ? 'block' : 'none';
+  document.getElementById('tabLiab').style.display   = isAsset ? 'none'  : 'block';
+  document.getElementById('alTabAssets').style.color       = isAsset ? 'var(--accent)'  : 'var(--text-dim)';
+  document.getElementById('alTabAssets').style.borderBottom= isAsset ? '3px solid var(--accent)' : '3px solid transparent';
+  document.getElementById('alTabLiab').style.color         = isAsset ? 'var(--text-dim)': 'var(--accent)';
+  document.getElementById('alTabLiab').style.borderBottom  = isAsset ? '3px solid transparent' : '3px solid var(--accent)';
+  if (isAsset) buildAssetsList(); else buildLiabList();
+}
 
 // ══════════════════════════════════════
 //  INIT
